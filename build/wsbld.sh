@@ -3,7 +3,7 @@
 # Open Kernel Attached Operating System (OpenKaOS)
 # Platform Build System version 3.0.0
 #
-# Copyright (c) 2009-2014 Opaque Systems, Inc
+# Copyright (c) 2009-2014 Opaque Systems, LLC 
 #
 # script : wsbld.sh
 # purpose: create a new user workspace
@@ -24,7 +24,7 @@ export PBHERE PBHOME PBVER PBUSER PBTAG PBWS
 
 echo ""
 echo "OpenKaOS Platform Build System, version $PBVER"
-echo "Copyright (c) 2009-2014 Opaque Systems, Inc"
+echo "Copyright (c) 2009-2014 Opaque Systems, LLC"
 echo ""
 echo ""
 echo "Building workspace for $PBUSER in $PBWS"

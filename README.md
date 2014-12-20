@@ -74,7 +74,7 @@ First create a workspace using the wsbld.sh utility:
 
  KaOS Platform Build System, version 1.0.0
 
- Copyright (c) 2009-2014 Opaque Systems, Inc
+ Copyright (c) 2009-2014 Opaque Systems, LLC
 
  Building workspace for kaostest in /home/kaostest/kaos-ws/kaos-1400595098
 
@@ -166,7 +166,7 @@ Run the chroot-fcs.sh script referencing the build:
 
         Open Kernel Attached Operating System (KaOS)
 
-        Copyright (c) 2009-2014 Opaque Systems, Inc
+        Copyright (c) 2009-2014 Opaque Systems, LLC 
 
         Build Environment: bld-1308375981
 
@@ -206,4 +206,4 @@ https://github.com/opaquesystems/openkaos/issues
 
 #############################################################################
 
-Copyright (c) 2014 Opaque Systems, Inc
+Copyright (c) 2014 Opaque Systems, LLC 
