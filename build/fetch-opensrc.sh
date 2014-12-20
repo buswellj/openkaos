@@ -27,7 +27,7 @@ echo "  [.] Retrieving Open Source components "
 cd ~/kaos-ws/$PBENV
 mkdir -p pkg/$PBTAG
 chmod a+wt pkg/$PBTAG
-wget -i $PBHERE/opensrc-list -P pkg/$PBTAG
+wget -4 -i $PBHERE/opensrc-list -P pkg/$PBTAG
 cd pkg/$PBTAG
 mkdir -p patches
 chmod a+wt patches
