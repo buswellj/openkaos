@@ -47,6 +47,18 @@ the combination of kernel + OS.
 
 #############################################################################
 
+System Requirements
+
+To build OpenKaOS you will need a recent Linux development environment, we
+recommend Fedora 20 or later. When using a basic Fedora 20 install you will
+need to run the following commands:
+
+ yum update
+ yum group install "Development Tools"
+ yum install patch mpfr mpfr-devel flex bison byacc
+
+#############################################################################
+
 How do I build OpenKaOS?
 
 Using a recent Linux system of your choice (Arch Linux, Fedora, Ubuntu,
