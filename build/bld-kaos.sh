@@ -116,6 +116,6 @@ sudo chroot "$LFS" $TOOLS/bin/env -i \
 
 echo "  [.] Cleaning SDK environment"
 sudo mv $LFS$TOOLS $LFS/..
-sudo umount $LFS/dev/pts $LFS/dev/shm $LFS/dev $LFS/proc $LFS/sys
+sudo umount $LFS/dev/pts $LFS/dev/shm $LFS/dev $LFS/proc $LFS/sys $LFS/run
 sudo mv $LFS/src $LFS/../src2
 
