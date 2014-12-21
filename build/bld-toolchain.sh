@@ -19,9 +19,7 @@ cp -a $PBSRC/* src1
 echo "  [.] Applying patches to source tree..."
 echo ""
 cd src1
-cd bash
-patch -Np1 -i ../patches/bash-4.2-fixes-12.patch
-cd ../perl
+cd perl
 patch -Np1 -i ../patches/perl-5.18.2-libc-1.patch
 cd $PBBLD
 

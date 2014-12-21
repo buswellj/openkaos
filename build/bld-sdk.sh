@@ -517,9 +517,8 @@ ln -sfv ../../lib/libhistory.so.6 /usr/lib/libhistory.so 1>>$LOGS/readline.log 2
 
 echo "  [.] bash "
 cd $SRC/bash
-patch -Np1 -i ../patches/bash-4.2-fixes-12.patch >>$LOGS/bash.log 2>>$LOGS/bash.err
 ./configure --prefix=/usr --bindir=/bin \
-    --htmldir=/usr/share/doc/bash-4.2 --without-bash-malloc \
+    --htmldir=/usr/share/doc/bash-4.3.30 --without-bash-malloc \
     --with-installed-readline 1>>$LOGS/bash.log 2>>$LOGS/bash.err
 make
 #chown -Rv nobody .
