@@ -1,8 +1,8 @@
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 3.0.0
+# Platform Build System version 4.0.0
 #
-# Copyright (c) 2009-2014 Opaque Systems, LLC 
+# Copyright (c) 2009-2015 Opaque Systems, LLC 
 #
 # script : bld-sdk.sh
 # purpose: sdk build script 1 of 3, creates SDK chroot from toolchain
@@ -97,8 +97,8 @@ make install 1>>$LOGS/man-pages.log 2>>$LOGS/man-pages.err
 
 echo "  [.] glibc "
 cd $SRC/glibc
-sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
-patch -Np1 -i ../patches/glibc-2.19-fhs-1.patch
+#sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
+patch -Np1 -i ../patches/glibc-2.21-fhs-1.patch
 mkdir -v ../glibc-build
 cd ../glibc-build
 #case `uname -m` in
@@ -219,8 +219,8 @@ make install 1>>$LOGS/file.log 2>>$LOGS/file.err
 echo "  [.] binutils"
 cd $SRC/binutils
 expect -c "spawn ls" 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
-rm -fv etc/standards.info
-sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
+#rm -fv etc/standards.info
+#sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
 mkdir -v ../binutils-build
 cd ../binutils-build
 ../binutils/configure --prefix=/usr --enable-shared 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
@@ -242,6 +242,7 @@ make install 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 
 echo "  [.] mpfr"
 cd $SRC/mpfr
+patch -Np1 -i ../patches/mpfr-3.1.2-upstream_fixes-3.patch
 ./configure --prefix=/usr --enable-thread-safe --docdir=/usr/share/doc/mpfr 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make check 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
@@ -254,26 +255,16 @@ make 1>>$LOGS/mpc.log 2>>$LOGS/mpc.err
 make check 1>>$LOGS/mpc.log 2>>$LOGS/mpc.err
 make install 1>>$LOGS/mpc.log 2>>$LOGS/mpc.err
 
-
 echo "  [.] gcc"
 cd $SRC/gcc
 mv gmp kaos_magic.gmp
 mv mpc kaos_magic.mpc
 mv mpfr kaos_magic.mpfr
-#sed -i 's/install_to_$(INSTALL_DEST) //' libiberty/Makefile.in
-case `uname -m` in
-  i?86) sed -i 's/^T_CFLAGS =$/& -fomit-frame-pointer/' \
-        gcc/Makefile.in ;;
-esac
-sed -i -e /autogen/d -e /check.sh/d fixincludes/Makefile.in 
-mv -v libmudflap/testsuite/libmudflap.c++/pass41-frag.cxx{,.disable}
 mkdir -v ../gcc-build
 cd ../gcc-build
-../gcc/configure --prefix=/usr \
+SED=sed ../gcc/configure --prefix=/usr \
     --libexecdir=/usr/lib --enable-shared \
-    --enable-threads=posix --enable-__cxa_atexit \
-    --enable-clocale=gnu --enable-languages=c,c++ \
-    --with-gmp-include=$(pwd)/gmp \
+    --enable-languages=c,c++ \
     --disable-multilib --disable-bootstrap --with-system-zlib 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 make 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 ulimit -s 32768
@@ -292,14 +283,6 @@ grep "/lib.*/libc.so.6 " dummy.log 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 grep found dummy.log 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 mkdir -pv /usr/share/gdb/auto-load/usr/lib
 mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
-
-echo "  [.] sed "
-cd $SRC/sed
-./configure --prefix=/usr --bindir=/bin --htmldir=/usr/share/doc/sed-4.2.2 1>>$LOGS/sed.log 2>>$LOGS/sed.err
-make 1>>$LOGS/sed.log 2>>$LOGS/sed.err1>>$LOGS/sed.log 2>>$LOGS/sed.err
-make html 1>>$LOGS/sed.log 2>>$LOGS/sed.err
-make check 1>>$LOGS/sed.log 2>>$LOGS/sed.err
-make install 1>>$LOGS/sed.log 2>>$LOGS/sed.err
 
 echo "  [.] bzip2"
 cd $SRC/bzip2
@@ -381,6 +364,47 @@ create-cracklib-dict /usr/share/dict/cracklib-words \
                      /usr/share/dict/cracklib-extra-words 1>>$LOGS/cracklib.log 2>>$LOGS/cracklib.err
 make test 1>>$LOGS/cracklib.log 2>>$LOGS/cracklib.err
 
+echo "  [.] attr "
+cd $SRC/attr
+sed -i -e 's|/@pkg_name@|&-@pkg_version@|' include/builddefs.in
+./configure --prefix=/usr --bindir=/bin 1>>$LOGS/attr.log 2>>$LOGS/attr.err
+make  1>>$LOGS/attr.log 2>>$LOGS/attr.err
+make install install-dev install-lib  1>>$LOGS/attr.log 2>>$LOGS/attr.err
+chmod -v 755 /usr/lib/libattr.so  1>>$LOGS/attr.log 2>>$LOGS/attr.err
+mv -v /usr/lib/libattr.so.* /lib 1>>$LOGS/attr.log 2>>$LOGS/attr.err
+ln -sfv ../../lib/$(readlink /usr/lib/libattr.so) /usr/lib/libattr.so 1>>$LOGS/attr.log 2>>$LOGS/attr.err
+
+echo "  [.] acl "
+cd $SRC/acl
+sed -i -e 's|/@pkg_name@|&-@pkg_version@|' include/builddefs.in
+sed -i "s:| sed.*::g" test/{sbits-restore,cp,misc}.test
+sed -i -e "/TABS-1;/a if (x > (TABS-1)) x = (TABS-1);" \
+    libacl/__acl_to_any_text.c
+./configure --prefix=/usr \
+            --bindir=/bin \
+            --libexecdir=/usr/lib 1>>$LOGS/acl.log 2>>$LOGS/acl.err
+make 1>>$LOGS/acl.log 2>>$LOGS/acl.err
+make install install-dev install-lib 1>>$LOGS/acl.log 2>>$LOGS/acl.err
+chmod -v 755 /usr/lib/libacl.so 1>>$LOGS/acl.log 2>>$LOGS/acl.err
+mv -v /usr/lib/libacl.so.* /lib 1>>$LOGS/acl.log 2>>$LOGS/acl.err
+ln -sfv ../../lib/$(readlink /usr/lib/libacl.so) /usr/lib/libacl.so 1>>$LOGS/acl.log 2>>$LOGS/acl.err
+
+echo "  [.] libcap "
+cd $SRC/libcap
+make 1>>$LOGS/libcap.log 2>>$LOGS/libcap.err
+make RAISE_SETFCAP=no prefix=/usr install 1>>$LOGS/libcap.log 2>>$LOGS/libcap.err
+chmod -v 755 /usr/lib/libcap.so 1>>$LOGS/libcap.log 2>>$LOGS/libcap.err
+mv -v /usr/lib/libcap.so.* /lib 1>>$LOGS/libcap.log 2>>$LOGS/libcap.err
+ln -sfv ../../lib/$(readlink /usr/lib/libcap.so) /usr/lib/libcap.so 1>>$LOGS/libcap.log 2>>$LOGS/libcap.err
+
+echo "  [.] sed "
+cd $SRC/sed
+./configure --prefix=/usr --bindir=/bin --htmldir=/usr/share/doc/sed-4.2.2 1>>$LOGS/sed.log 2>>$LOGS/sed.err
+make 1>>$LOGS/sed.log 2>>$LOGS/sed.err1>>$LOGS/sed.log 2>>$LOGS/sed.err
+make html 1>>$LOGS/sed.log 2>>$LOGS/sed.err
+make check 1>>$LOGS/sed.log 2>>$LOGS/sed.err
+make install 1>>$LOGS/sed.log 2>>$LOGS/sed.err
+
 echo "  [.] shadow"
 cd $SRC/shadow
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
@@ -389,7 +413,8 @@ sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
        -e 's@/var/spool/mail@/var/mail@' etc/login.defs
 sed -i 's@DICTPATH.*@DICTPATH\t/lib/cracklib/pw_dict@' \
     etc/login.defs
-./configure --sysconfdir=/etc --with-libcrack 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
+sed -i 's/1000/999/' etc/useradd
+./configure --sysconfdir=/etc --with-libcrack --with-group-name-max-length=32 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
 make 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
 make install 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
 mv -v /usr/bin/passwd /bin
@@ -410,21 +435,22 @@ cd $SRC/procps
 ./configure --prefix=/usr                           \
             --exec-prefix=                          \
             --libdir=/usr/lib                       \
-            --docdir=/usr/share/doc/procps-ng-3.3.9 \
+            --docdir=/usr/share/doc/procps-ng-3.3.10 \
             --disable-static                        \
-            --disable-skill                         \
             --disable-kill 1>>$LOGS/procps.log 2>>$LOGS/procps.err
 make 1>>$LOGS/procps.log 2>>$LOGS/procps.err
 make install 1>>$LOGS/procps.log 2>>$LOGS/procps.err
+mv -v /usr/bin/pidof /bin
 mv -v /usr/lib/libprocps.so.* /lib
-#ln -sfv ../../lib/libprocps.so.1.1.2 /usr/lib/libprocps.so
 ln -sfv ../../lib/$(readlink /usr/lib/libprocps.so) /usr/lib/libprocps.so
 
 echo "  [.] e2fsprogs "
 cd $SRC/e2fsprogs
-sed -i -e 's/mke2fs/$MKE2FS/' -e 's/debugfs/$DEBUGFS/' tests/f_extent_oobounds/script
 mkdir -v build
 cd build
+LIBS=-L$TOOLS/lib \
+CFLAGS=-I$TOOLS/include \
+PKG_CONFIG_PATH=$TOOLS/lib/pkgconfig \
 ../configure --prefix=/usr --with-root-prefix="" \
     --enable-elf-shlibs --disable-libblkid --disable-libuuid \
     --disable-uuidd --disable-fsck 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
@@ -439,7 +465,7 @@ install-info --dir-file=/usr/share/info/dir \
 
 echo "  [.] coreutils "
 cd $SRC/coreutils
-patch -Np1 -i ../patches/coreutils-8.22-i18n-4.patch
+patch -Np1 -i ../patches/coreutils-8.23-i18n-1.patch
 FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/usr \
     --libexecdir=/usr/lib --enable-no-install-program=kill,uptime 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
 make 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
@@ -506,7 +532,7 @@ echo "  [.] readline "
 cd $SRC/readline
 sed -i '/MV.*old/d' Makefile.in
 sed -i '/{OLDSUFF}/c:' support/shlib-install
-patch -Np1 -i ../patches/readline-6.2-fixes-2.patch 1>>$LOGS/readline.log 2>>$LOGS/readline.err
+patch -Np1 -i ../patches/readline-6.3-upstream_fixes-3.patch 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 ./configure --prefix=/usr 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 make SHLIB_LIBS=-lncurses 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 make install 1>>$LOGS/readline.log 2>>$LOGS/readline.err
@@ -517,6 +543,7 @@ ln -sfv ../../lib/libhistory.so.6 /usr/lib/libhistory.so 1>>$LOGS/readline.log 2
 
 echo "  [.] bash "
 cd $SRC/bash
+patch -Np1 -i ../patches/bash-4.3.30-upstream_fixes-1.patch
 ./configure --prefix=/usr --bindir=/bin \
     --htmldir=/usr/share/doc/bash-4.3.30 --without-bash-malloc \
     --with-installed-readline 1>>$LOGS/bash.log 2>>$LOGS/bash.err
