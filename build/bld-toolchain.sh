@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 3.0.0
+# Platform Build System version 4.0.0
 #
-# Copyright (c) 2009-2014 Opaque Systems, LLC 
+# Copyright (c) 2009-2015 Opaque Systems, LLC 
 #
 # script : bld-toolchain.sh
 # purpose: builds the OpenKaOS toolchain system
@@ -18,9 +18,6 @@ cp -a $PBSRC/* src1
 
 echo "  [.] Applying patches to source tree..."
 echo ""
-cd src1
-cd perl
-patch -Np1 -i ../patches/perl-5.18.2-libc-1.patch
 cd $PBBLD
 
 echo "  [.] Building toolchain environment..."
@@ -74,15 +71,17 @@ cd ../gcc-build
     --with-native-system-header-dir=$TOOLS/include \
     --disable-nls --disable-shared --disable-multilib \
     --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp \
-    --disable-libitm --disable-libmudflap --disable-libssp \
+    --disable-libitm --disable-libssp \
     --disable-libquadmath --disable-libsanitizer \
-    --disable-libstdc++-v3 \
+    --disable-libstdc++-v3 --disable-libvtv --disable-libcilkrts \
     --enable-languages=c,c++ \
     --with-mpfr-include=$(pwd)/../gcc/mpfr/src --with-mpfr-lib=$(pwd)/../gcc/mpfr/src/.libs 1>$PBLOG/strap_gcc.log 2>$PBLOG/strap_gcc.err
 make 1>>$PBLOG/strap_gcc.log 2>>$PBLOG/strap_gcc.err
 make install 1>>$PBLOG/strap_gcc.log 2>>$PBLOG/strap_gcc.err
-ln -vs libgcc.a `$LFS_TGT-gcc -print-libgcc-file-name | \
-    sed 's/libgcc/&_eh/'`
+
+#
+#ln -vs libgcc.a `$LFS_TGT-gcc -print-libgcc-file-name | \
+#    sed 's/libgcc/&_eh/'`
 
 cd $PBBLD/src1
 echo "  [.] building kernel header api"
@@ -133,7 +132,7 @@ cd gcc-build-libstdc
     --disable-nls                        \
     --disable-libstdcxx-threads          \
     --disable-libstdcxx-pch              \
-    --with-gxx-include-dir=$TOOLS/$LFS_TGT/include/c++/4.8.2 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
+    --with-gxx-include-dir=$TOOLS/$LFS_TGT/include/c++/4.9.2 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
 make 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
 make install 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
 
@@ -143,7 +142,7 @@ mkdir -v binutils-pass2
 cd binutils-pass2
 CC="$LFS_TGT-gcc -B$TOOLS/lib/" \
    AR=$LFS_TGT-ar RANLIB=$LFS_TGT-ranlib \
-   ../binutils/configure --prefix=$TOOLS \
+   ../binutils/configure --prefix=$TOOLS --disable-werror \
    --disable-nls --with-lib-path=$TOOLS/lib --with-sysroot 1>>$PBLOG/strap_binutils2.log 2>>$PBLOG/strap_binutils2.err
 
 make 1>>$PBLOG/strap_binutils2.log 2>>$PBLOG/strap_binutils2.err
@@ -183,14 +182,12 @@ CC=$LFS_TGT-gcc \
     CXX=$LFS_TGT-g++ \
     AR=$LFS_TGT-ar RANLIB=$LFS_TGT-ranlib \
     ../gcc/configure --prefix=$TOOLS --with-native-system-header-dir=$TOOLS/include \
-    --with-local-prefix=$TOOLS --enable-clocale=gnu \
-    --enable-shared --enable-threads=posix \
-    --enable-__cxa_atexit --enable-languages=c,c++ \
+    --with-local-prefix=$TOOLS \
+    --enable-languages=c,c++ \
     --disable-libstdcxx-pch --disable-multilib \
     --disable-bootstrap --disable-libgomp \
     --with-mpfr-include=$(pwd)/../gcc2/mpfr/src \
-    --with-mpfr-lib=$(pwd)/mpfr/src/.libs \
-    --without-ppl --without-cloog 1>>$PBLOG/strap_gcc2.log 2>>$PBLOG/strap_gcc2.err
+    --with-mpfr-lib=$(pwd)/mpfr/src/.libs 1>>$PBLOG/strap_gcc2.log 2>>$PBLOG/strap_gcc2.err
 
 make 1>>$PBLOG/strap_gcc2.log 2>>$PBLOG/strap_gcc2.err
 make install 1>>$PBLOG/strap_gcc2.log 2>>$PBLOG/strap_gcc2.err
@@ -318,7 +315,6 @@ cd $PBBLD/src1
 
 echo "  [.] building m4.. "
 cd m4
-sed -i -e '/gets is a/d' lib/stdio.in.h
 ./configure --prefix=$TOOLS 1>>$PBLOG/strap_m4.log 2>>$PBLOG/strap_m4.err
 make 1>>$PBLOG/strap_m4.log 2>>$PBLOG/strap_m4.err
 make install 1>>$PBLOG/strap_m4.log 2>>$PBLOG/strap_m4.err
@@ -340,14 +336,13 @@ cd $PBBLD/src1
 
 echo "  [.] building perl.."
 cd perl
-sh Configure -des -Dprefix=$TOOLS 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
+sh Configure -des -Dprefix=$TOOLS -Dlibs=-lm 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 make 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 cp -v perl cpan/podlators/pod2man $TOOLS/bin 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
-mkdir -pv $TOOLS/lib/perl5/5.18.2 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
-cp -Rv lib/* $TOOLS/lib/perl5/5.18.2 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
+mkdir -pv $TOOLS/lib/perl5/5.20.1 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
+cp -Rv lib/* $TOOLS/lib/perl5/5.20.1 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 cd $TOOLS/lib/perl5
-ln -sf 5.18.0 5.18.2
-ln -sf 5.18.1 5.18.2
+ln -sf 5.20.0 5.20.1
 cd $PBBLD/src1
 
 echo "  [.] building sed.. "
@@ -373,7 +368,7 @@ cd $PBBLD/src1
 
 echo "  [.] building util-linux.. "
 cd util-linux
-./configure --prefix=$TOOLS --disable-makeinstall-chown --without-systemdsystemunitdir \
+./configure --prefix=$TOOLS --without-python --disable-makeinstall-chown --without-systemdsystemunitdir \
 	PKG_CONFIG="" 1>>$PBLOG/strap_util-linux.log 2>>$PBLOG/strap_util-linux.err
 make 1>>$PBLOG/strap_util-linux.log 2>>$PBLOG/strap_util-linux.err
 make install 1>>$PBLOG/strap_util-linux.log 2>>$PBLOG/strap_util-linux.err
