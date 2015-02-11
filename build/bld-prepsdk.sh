@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 3.0.0
+# Platform Build System version 4.0.0
 #
-# Copyright (c) 2009-2014 Opaque Systems, LLC 
+# Copyright (c) 2009-2015 Opaque Systems, LLC 
 #
 # script : bld-prepsdk.sh
 # purpose: prepares the system for building the SDK chroot

@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 3.0.0
+# Platform Build System version 4.0.0
 #
-# Copyright (c) 2009-2014 Opaque Systems, LLC 
+# Copyright (c) 2009-2015 Opaque Systems, LLC 
 #
 # script : chroot-fcs.sh
 # purpose: manual script to enter chroot for FCS release
@@ -11,7 +11,7 @@
 
 echo ""
 echo "Open Kernel Attached Operating System (OpenKaOS)"
-echo "Copyright (c) 2009-2014 Opaque Systems, LLC"
+echo "Copyright (c) 2009-2015 Opaque Systems, LLC"
 echo ""
 echo "Build Environment: $1"
 echo ""
