@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 3.0.0
+# Platform Build System version 4.0.0
 #
-# Copyright (c) 2009-2014 Opaque Systems, LLC
+# Copyright (c) 2009-2015 Opaque Systems, LLC
 #
 # script : fetch-opensrc.sh
 # purpose: this script fetches the core open source components from the Internet
@@ -11,8 +11,8 @@
 #
 
 echo ""
-echo "OpenKaOS Platform Build System, version 3.0.0"
-echo "Copyright (c) 2009-2014 Opaque Systems, LLC"
+echo "OpenKaOS Platform Build System, version 4.0.0"
+echo "Copyright (c) 2009-2015 Opaque Systems, LLC"
 echo ""
 echo ""
 echo "  [.] Loading environment "
@@ -62,6 +62,8 @@ mv *.gz archive
 mv *.xz archive
 
 echo "  [.] Renaming source directories "
+mv acl-* acl
+mv attr-* attr
 mv autoconf-* autoconf
 mv automake-* automake
 mv bash-* bash
@@ -75,6 +77,8 @@ mv cracklib-* cracklib
 mv dejagnu-* dejagnu
 mv diffutils-* diffutils
 mv e2fsprogs-* e2fsprogs
+mv eudev-* eudev
+mv expat-* expat
 mv expect* expect
 mv file-* file
 mv findutils-* findutils
@@ -89,16 +93,19 @@ mv gmp-* gmp
 mv glib-* glib
 cp -a gmp gcc/gmp
 cp -a gmp gcc2/gmp
+mv gperf-* gperf
 mv grep-* grep
 mv groff-* groff
 mv grub-* grub
 mv gzip-* gzip
 mv iana-etc-* iana-etc
 mv inetutils-* inetutils
+mv intltool-* intltool
 mv iproute2-* iproute2
 mv kbd-* kbd
 mv kmod* kmod
 mv less-* less
+mv libcap-* libcap
 mv libpipeline-* libpipeline
 mv libtool-* libtool
 mv linux-* linux
@@ -124,12 +131,11 @@ mv sed-* sed
 mv shadow-* shadow
 mv sysklogd-* sysklogd
 mv syslinux* syslinux
-mv systemd-* systemd
 mv tar-* tar
 mv tcl* tcl
 mv texinfo-* texinfo
-mv udev-* udev
 mv util-linux-* util-linux
+mv XML-Parser-* XML-Parser
 mv xz-* xz
 mv zlib-* zlib
 cp -a archive/cracklib-words-*.gz cracklib/
