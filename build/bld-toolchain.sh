@@ -293,6 +293,7 @@ echo "  [.] building gettext.. "
 cd gettext/gettext-tools
 EMACS="no" ./configure --prefix=$TOOLS --disable-shared 1>>$PBLOG/strap_gettext.log 2>>$PBLOG/strap_gettext.err
 make -C gnulib-lib 1>>$PBLOG/strap_gettext.log 2>>$PBLOG/strap_gettext.err
+make -C intl pluralx.c 1>>$PBLOG/strap_gettext.log 2>>$PBLOG/strap_gettext.err
 make -C src msgfmt 1>>$PBLOG/strap_gettext.log 2>>$PBLOG/strap_gettext.err
 make -C src msgmerge 1>>$PBLOG/strap_gettext.log 2>>$PBLOG/strap_gettext.err
 make -C src xgettext 1>>$PBLOG/strap_gettext.log 2>>$PBLOG/strap_gettext.err
