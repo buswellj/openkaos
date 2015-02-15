@@ -236,7 +236,7 @@ cd $SRC/gmp
 ###
 ./configure --prefix=/usr --enable-cxx 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 make 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
-make check 2>&1 | tee gmp-check-logmake check 2>&1 | tee gmp-check-log
+make check 2>&1 | tee gmp-check-logmake check 2>&1 | tee gmp-check-log 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 awk '/tests passed/{total+=$2} ; END{print total}' gmp-check-log 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 make install 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 
