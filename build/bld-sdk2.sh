@@ -13,9 +13,10 @@ SRC=/src
 LOGS=/src/logs
 CFLAGS="-O2 -fPIC -pipe"
 CXXFLAGS="$CFLAGS"
-MAKEOPTS="-j3"
-export SRC TOOLS LOGS CFLAGS CXXFLAGS MAKEOPTS
-
+KAOSCPUS=`cat /proc/cpuinfo | grep processor | wc -l`
+export SRC TOOLS LOGS CFLAGS CXXFLAGS KAOSCPUS
+MAKEOPTS="-j$KAOSCPUS"
+export MAKEOPTS
 echo ""
 echo "  [*] Building SDK: stage 2 of 3..."
 
