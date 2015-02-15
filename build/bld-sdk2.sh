@@ -1,8 +1,8 @@
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 3.0.0
+# Platform Build System version 4.0.0
 #
-# Copyright (c) 2009-2014 Opaque Systems, LLC 
+# Copyright (c) 2009-2015 Opaque Systems, LLC 
 #
 # script : bld-sdk.sh
 # purpose: sdk build script 2 of 3, creates SDK chroot from toolchain
@@ -21,6 +21,7 @@ echo "  [*] Building SDK: stage 2 of 3..."
 
 echo "  [.] bc"
 cd $SRC/bc
+patch -Np1 -i ../patches/bc-1.06.95-memory_leak-1.patch
 ./configure --prefix=/usr --with-readline 1>>$LOGS/bc.log 2>>$LOGS/bc.err
 make 1>>$LOGS/bc.log 2>>$LOGS/bc.err
 make install 1>>$LOGS/bc.log 2>>$LOGS/bc.err
@@ -40,12 +41,18 @@ make install 1>>$LOGS/gdbm.log 2>>$LOGS/gdbm.err
 make install-compat 1>>$LOGS/gdbm.log 2>>$LOGS/gdbm.err
 #install-info --dir-file=/usr/info/dir /usr/info/gdbm.info 1>>$LOGS/gdbm.log 2>>$LOGS/gdbm.err
 
+echo "  [.] expat "
+cd $SRC/expat
+./configure --prefix=/usr 1>$LOGS/expat.log 2>$LOGS/expat.err
+make 1>>$LOGS/expat.log 2>>$LOGS/expat.err
+make install 1>>$LOGS/expat.log 2>>$LOGS/expat.err
+
 echo "  [.] inetutils"
 cd $SRC/inetutils
 echo '#define PATH_PROCNET_DEV "/proc/net/dev"' >> ifconfig/system/linux.h
 ./configure --prefix=/usr --libexecdir=/usr/sbin \
-    --localstatedir=/var --disable-ifconfig \
-    --disable-logger --disable-syslogd --disable-whois \
+    --localstatedir=/var \
+    --disable-logger --disable-whois \
     --disable-servers 1>>$LOGS/inetutils.log 2>>$LOGS/inetutils.err
 
 make 1>>$LOGS/inetutils.log 2>>$LOGS/inetutils.err
@@ -56,10 +63,9 @@ mv -v /usr/bin/ifconfig /sbin
 echo "  [.] perl"
 cd $SRC/perl
 echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
-sed -i -e "s|BUILD_ZLIB\s*= True|BUILD_ZLIB = False|"           \
-       -e "s|INCLUDE\s*= ./zlib-src|INCLUDE    = /usr/include|" \
-       -e "s|LIB\s*= ./zlib-src|LIB        = /usr/lib|"         \
-    cpan/Compress-Raw-Zlib/config.in
+export BUILD_ZLIB=False
+export BUILD_BZIP2=0
+patch -Np1 -i ../patches/perl-5.20.1-infinite_recurse_fix-1.patch 1>>$LOGS/perl.log 2>>$LOGS/perl.err
 sh Configure -des -Dprefix=/usr \
                   -Dvendorprefix=/usr           \
                   -Dman1dir=/usr/share/man/man1 \
@@ -70,6 +76,14 @@ sh Configure -des -Dprefix=/usr \
 make 1>>$LOGS/perl.log 2>>$LOGS/perl.err
 make -k test 1>>$LOGS/perl.log 2>>$LOGS/perl.err
 make install 1>>$LOGS/perl.log 2>>$LOGS/perl.err
+unset BUILD_ZLIB BUILD_BZIP2
+
+echo "  [.] XML-Parser "
+cd $SRC/XML-Parser
+perl Makefile.PL 1>>$LOGS/xmlparser.log 2>>$LOGS/xmlparser.err
+make 1>>$LOGS/xmlparser.log 2>>$LOGS/xmlparser.err
+make test 1>>$LOGS/xmlparser.log 2>>$LOGS/xmlparser.err
+make install 1>>$LOGS/xmlparser.log 2>>$LOGS/xmlparser.err
 
 echo "  [.] autoconf"
 cd $SRC/autoconf
@@ -95,7 +109,6 @@ echo "  [.] gawk"
 cd $SRC/gawk
 ./configure --prefix=/usr --libexecdir=/usr/lib 1>>$LOGS/gawk.log 2>>$LOGS/gawk.err
 make 1>>$LOGS/gawk.log 2>>$LOGS/gawk.err
-#make check 1>>$LOGS/gawk.log 2>>$LOGS/gawk.err
 make install 1>>$LOGS/gawk.log 2>>$LOGS/gawk.err
 
 echo "  [.] findutils "
@@ -103,7 +116,6 @@ cd $SRC/findutils
 ./configure --prefix=/usr --libexecdir=/usr/lib/findutils \
     --localstatedir=/var/lib/locate 1>>$LOGS/findutils.log 2>>$LOGS/findutils.err
 make 1>>$LOGS/findutils.log 2>>$LOGS/findutils.err
-#make check 1>>$LOGS/findutils.log 2>>$LOGS/findutils.err
 make install 1>>$LOGS/findutils.log 2>>$LOGS/findutils.err
 mv -v /usr/bin/find /bin 1>>$LOGS/findutils.log 2>>$LOGS/findutils.err
 sed -i 's/find:=${BINDIR}/find:=\/bin/' /usr/bin/updatedb 1>>$LOGS/findutils.log 2>>$LOGS/findutils.err
@@ -115,6 +127,18 @@ cd $SRC/gettext
 make 1>>$LOGS/gettext.log 2>>$LOGS/gettext.err
 #make check 1>>$LOGS/gettext.log 2>>$LOGS/gettext.err
 make install 1>>$LOGS/gettext.log 2>>$LOGS/gettext.err
+
+echo "  [.] intltool"
+cd $SRC/intltool
+./configure --prefix=/usr 1>$LOGS/intltool.log 2>$LOGS/intltool.err
+make 1>>$LOGS/intltool.log 2>>$LOGS/intltool.err
+make install 1>>$LOGS/intltool.log 2>>$LOGS/intltool.err
+
+echo "  [.] gperf"
+cd $SRC/gperf
+./configure --prefix=/usr 1>$LOGS/gperf.log 2>$LOGS/gperf.err
+make 1>>$LOGS/gperf.log 2>>$LOGS/gperf.err
+make install 1>>$LOGS/gperf.log 2>>$LOGS/gperf.err
 
 echo "  [.] groff"
 cd $SRC/groff
@@ -129,7 +153,11 @@ cd $SRC/xz
 ./configure --prefix=/usr --libdir=/lib --docdir=/usr/share/doc/xz 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 make 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 #make check 1>>$LOGS/xz.log 2>>$LOGS/xz.err
-make pkgconfigdir=/usr/lib/pkgconfig install 1>>$LOGS/xz.log 2>>$LOGS/xz.err
+#make pkgconfigdir=/usr/lib/pkgconfig install 1>>$LOGS/xz.log 2>>$LOGS/xz.err
+make install 1>>$LOGS/xz.log 2>>$LOGS/xz.err
+mv -v   /usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} /bin 1>>$LOGS/xz.log 2>>$LOGS/xz.err
+mv -v /usr/lib/liblzma.so.* /lib 1>>$LOGS/xz.log 2>>$LOGS/xz.err
+ln -svf ../../lib/$(readlink /usr/lib/liblzma.so) /usr/lib/liblzma.so 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 
 echo "  [.] less"
 cd $SRC/less
@@ -157,7 +185,7 @@ make DESTDIR= SBINDIR=/sbin MANDIR=/usr/share/man \
 
 echo "  [.] kbd"
 cd $SRC/kbd
-patch -Np1 -i ../patches/kbd-2.0.1-backspace-1.patch
+patch -Np1 -i ../patches/kbd-2.0.2-backspace-1.patch
 sed -i 's/\(RESIZECONS_PROGS=\)yes/\1no/g' configure
 sed -i 's/resizecons.8 //' man/man8/Makefile.in
 PKG_CONFIG_PATH=$TOOLS/lib/pkgconfig ./configure --prefix=/usr --disable-vlock 1>>$LOGS/kbd.log 2>>$LOGS/kbd.err
@@ -201,6 +229,7 @@ make install 1>>$LOGS/patch.log 2>>$LOGS/patch.err
 
 echo "  [.] sysklogd"
 cd $SRC/sysklogd
+sed -i '/Error loading kernel symbols/{n;n;d}' ksym_mod.c 1>>$LOGS/sysklogd.log 2>>$LOGS/sysklogd.err
 make 1>>$LOGS/sysklogd.log 2>>$LOGS/sysklogd.err
 make BINDIR=/sbin install 1>>$LOGS/sysklogd.log 2>>$LOGS/sysklogd.err
 cat > /etc/syslog.conf << "EOF"
@@ -219,7 +248,6 @@ EOF
 
 echo "  [.] tar"
 cd $SRC/tar
-patch -Np1 -i ../patches/tar-1.27.1-manpage-1.patch
 FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/usr --bindir=/bin --libexecdir=/usr/sbin 1>>$LOGS/tar.log 2>>$LOGS/tar.err
 make 1>>$LOGS/tar.log 2>>$LOGS/tar.err
 make check 1>>$LOGS/tar.log 2>>$LOGS/tar.err
@@ -239,25 +267,51 @@ for f in *
 do install-info $f dir 2>/dev/null
 done
 
-echo "  [.] udev"
-cd $SRC/systemd
-cp -a $SRC/udev udev-lfs-208-3
-ln -sf udev-lfs-208-3 udev
-ln -svf $TOOLS/include/blkid /usr/include
-ln -svf $TOOLS/include/uuid  /usr/include
-make -f udev/Makefile.lfs 1>>$LOGS/udev.log 2>>$LOGS/udev.err
-make -f udev/Makefile.lfs install 1>>$LOGS/udev.log 2>>$LOGS/udev.err
-build/udevadm hwdb --update 1>>$LOGS/udev.log 2>>$LOGS/udev.err
-source udev/init-net-rules.sh 1>>$LOGS/udev.log 2>>$LOGS/udev.err
-rm -fv /usr/include/{uuid,blkid}
-unset LD_LIBRARY_PATH
+echo "  [.] eudev"
+cd $SRC/eudev
+sed -r -i 's|/usr(/bin/test)|\1|' test/udev-test.pl 1>$LOGS/eudev.log 2>$LOGS/eudev.err
+BLKID_CFLAGS=-I/tools/include       \
+BLKID_LIBS='-L/tools/lib -lblkid'   \
+./configure --prefix=/usr           \
+            --bindir=/sbin          \
+            --sbindir=/sbin         \
+            --libdir=/usr/lib       \
+            --sysconfdir=/etc       \
+            --libexecdir=/lib       \
+            --with-rootprefix=      \
+            --with-rootlibdir=/lib  \
+            --enable-split-usr      \
+            --enable-libkmod        \
+            --enable-rule_generator \
+            --enable-keymap         \
+            --disable-introspection \
+            --disable-gudev         \
+            --disable-gtk-doc-html  \
+            --with-firmware-path=/lib/firmware 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+make 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+mkdir -pv /lib/udev/rules.d 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+mkdir -pv /etc/udev/rules.d 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+make install 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+cp -a $SRC/udev udev-lfs-20140408 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+make -f udev-lfs-20140408/Makefile.lfs install 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+udevadm hwdb --update 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+
+
 
 echo "  [.] util-linux "
 cd $SRC/util-linux
-sed -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' \
-    -i $(grep -rl '/etc/adjtime' .)
 mkdir -pv /var/lib/hwclock
-./configure 1>>$LOGS/util-linux.log 2>>$LOGS/util-linux.err
+./configure ADJTIME_PATH=/var/lib/hwclock/adjtime     \
+            --docdir=/usr/share/doc/util-linux-2.26-rc2 \
+            --disable-chfn-chsh  \
+            --disable-login      \
+            --disable-su         \
+            --disable-setpriv    \
+            --disable-runuser    \
+            --disable-pylibmount \
+            --without-python     \
+            --without-systemd    \
+            --without-systemdsystemunitdir 1>$LOGS/util-linux.log 2>$LOGS/util-linux.err
 make 1>>$LOGS/util-linux.log 2>>$LOGS/util-linux.err
 make install 1>>$LOGS/util-linux.log 2>>$LOGS/util-linux.err
 
