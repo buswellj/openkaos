@@ -100,7 +100,7 @@ make install 1>>$LOGS/man-pages.log 2>>$LOGS/man-pages.err
 echo "  [.] glibc "
 cd $SRC/glibc
 #sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
-patch -Np1 -i ../patches/glibc-2.21-fhs-1.patch
+patch -Np1 -i ../patches/glibc-2.21-fhs-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
 mkdir -v ../glibc-build
 cd ../glibc-build
 #case `uname -m` in
@@ -244,7 +244,7 @@ make install 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 
 echo "  [.] mpfr"
 cd $SRC/mpfr
-patch -Np1 -i ../patches/mpfr-3.1.2-upstream_fixes-3.patch
+patch -Np1 -i ../patches/mpfr-3.1.2-upstream_fixes-3.patch 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 ./configure --prefix=/usr --enable-thread-safe --docdir=/usr/share/doc/mpfr 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make check 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
@@ -288,7 +288,7 @@ mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
 
 echo "  [.] bzip2"
 cd $SRC/bzip2
-patch -Np1 -i ../patches/bzip2-1.0.6-install_docs-1.patch
+patch -Np1 -i ../patches/bzip2-1.0.6-install_docs-1.patch 1>>$LOGS/bzip2.log 2>>$LOGS/bzip2.err
 sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
 sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
 make -f Makefile-libbz2_so 1>>$LOGS/bzip2.log 2>>$LOGS/bzip2.err
@@ -467,7 +467,8 @@ install-info --dir-file=/usr/share/info/dir \
 
 echo "  [.] coreutils "
 cd $SRC/coreutils
-patch -Np1 -i ../patches/coreutils-8.23-i18n-1.patch
+patch -Np1 -i ../patches/coreutils-8.23-i18n-1.patch 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+touch Makefile.in
 FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/usr \
     --libexecdir=/usr/lib --enable-no-install-program=kill,uptime 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
 make 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
@@ -545,11 +546,11 @@ ln -sfv ../../lib/libhistory.so.6 /usr/lib/libhistory.so 1>>$LOGS/readline.log 2
 
 echo "  [.] bash "
 cd $SRC/bash
-patch -Np1 -i ../patches/bash-4.3.30-upstream_fixes-1.patch
+patch -Np1 -i ../patches/bash-4.3.30-upstream_fixes-1.patch 1>$LOGS/bash.log 2>$LOGS/bash.err
 ./configure --prefix=/usr --bindir=/bin \
     --htmldir=/usr/share/doc/bash-4.3.30 --without-bash-malloc \
     --with-installed-readline 1>>$LOGS/bash.log 2>>$LOGS/bash.err
-make
+make 1>>$LOGS/bash.log 2>>$LOGS/bash.err
 #chown -Rv nobody .
 #su  nobody -s /bin/bash -c "$PATH=$PATH make tests"
 make install 1>>$LOGS/bash.log 2>>$LOGS/bash.err

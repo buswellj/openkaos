@@ -22,7 +22,7 @@ echo "  [*] Building SDK: stage 2 of 3..."
 
 echo "  [.] bc"
 cd $SRC/bc
-patch -Np1 -i ../patches/bc-1.06.95-memory_leak-1.patch
+patch -Np1 -i ../patches/bc-1.06.95-memory_leak-1.patch 1>>$LOGS/bc.log 2>>$LOGS/bc.err
 ./configure --prefix=/usr --with-readline 1>>$LOGS/bc.log 2>>$LOGS/bc.err
 make 1>>$LOGS/bc.log 2>>$LOGS/bc.err
 make install 1>>$LOGS/bc.log 2>>$LOGS/bc.err
@@ -186,7 +186,7 @@ make DESTDIR= SBINDIR=/sbin MANDIR=/usr/share/man \
 
 echo "  [.] kbd"
 cd $SRC/kbd
-patch -Np1 -i ../patches/kbd-2.0.2-backspace-1.patch
+patch -Np1 -i ../patches/kbd-2.0.2-backspace-1.patch 1>>$LOGS/kbd.log 2>>$LOGS/kbd.err
 sed -i 's/\(RESIZECONS_PROGS=\)yes/\1no/g' configure
 sed -i 's/resizecons.8 //' man/man8/Makefile.in
 PKG_CONFIG_PATH=$TOOLS/lib/pkgconfig ./configure --prefix=/usr --disable-vlock 1>>$LOGS/kbd.log 2>>$LOGS/kbd.err
@@ -296,8 +296,6 @@ make install 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 cp -a $SRC/udev udev-lfs-20140408 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 make -f udev-lfs-20140408/Makefile.lfs install 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 udevadm hwdb --update 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
-
-
 
 echo "  [.] util-linux "
 cd $SRC/util-linux
