@@ -108,6 +108,14 @@ if [ -n "$PBSKIPTOOLS" ]; then
  sudo ln -sv $LFS/tools.$PBUSER $TOOLS
  sudo chown -v $PBUSER $LFS/tools.$PBUSER
  sudo cp -a $PBTOOLCHAIN/tools.$PBUSER/* $TOOLS
+ echo "  [.] Setting toolchain environment"
+ set +h
+ umask 022
+ LC_ALL=POSIX
+ LFS_TGT=$(uname -m)-kaos-linux-gnu
+ PATH=/tools.$PBUSER/bin:/bin:/usr/bin:$PATH
+ export LC_ALL LFS_TGT PATH
+ sudo chown -R root:root $LFS/tools.$PBUSER
  echo "toolchain skipped end: " >> $PBSTATS
  date >> $PBSTATS
  date +%s >> $PBSTATS

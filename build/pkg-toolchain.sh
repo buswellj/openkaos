@@ -65,7 +65,7 @@ echo "  [.] Packaging toolchain in $PBPKGTC"
 echo $PBPKGTC > ~/openkaos/.toolchain
 mkdir -p $PBPKGTC
 
-sudo cp -a $PBENV/tools.$USER $PBPKGTC
+sudo cp -a $PBENV/tools.$USER.backup.* $PBPKGTC/tools.$USER
 
 echo "  [.] Packaging complete"
 
