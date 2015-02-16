@@ -90,7 +90,7 @@ echo "  [.] autoconf"
 cd $SRC/autoconf
 ./configure --prefix=/usr 1>>$LOGS/autoconf.log 2>>$LOGS/autoconf.err
 make 1>>$LOGS/autoconf.log 2>>$LOGS/autoconf.err
-make check 1>>$LOGS/autoconf.log 2>>$LOGS/autoconf.err
+#make check 1>>$LOGS/autoconf.log 2>>$LOGS/autoconf.err
 make install 1>>$LOGS/autoconf.log 2>>$LOGS/autoconf.err
 
 echo "  [.] automake"
@@ -203,7 +203,7 @@ cd $SRC/kmod
             --with-xz           \
             --with-zlib 1>>$LOGS/kmod.log 2>>$LOGS/kmod.err
 make 1>>$LOGS/kmod.log 2>>$LOGS/kmod.err
-make pkgconfigdir=/usr/lib/pkgconfig install 1>>$LOGS/kmod.log 2>>$LOGS/kmod.err
+make install 1>>$LOGS/kmod.log 2>>$LOGS/kmod.err
 for target in depmod insmod modinfo modprobe rmmod; do
   ln -sv ../bin/kmod /sbin/$target
 done
