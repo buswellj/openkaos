@@ -44,11 +44,18 @@ fi
 PBSRC="$PBWS/$PBTAG/pkg/$1"
 PBBLD="$PBWS/$PBTAG/bld-$PBNOW"
 PBLOG="$PBWS/$PBTAG/log-$PBNOW"
-export PBSRC PBBLD PBLOG
+PBSTATS="$PBWS/$PBTAG/stats-$PBNOW"
+export PBSRC PBBLD PBLOG PBSTATS
 
 echo "  [-] Starting Build ID# $PBNOW"
 echo "  [.] Creating Build and Log directories..."
 mkdir -p $PBBLD $PBLOG
+
+echo "  [.] Creating build stats file..."
+echo "creating stats..." > $PBSTATS
+date >> $PBSTATS
+date +%s >> $PBSTATS
+echo "" >> $PBSTATS
 
 echo "  [-] Environment Information: "
 echo ""
@@ -69,6 +76,11 @@ echo "export PBUSER PBHOME PBWS PBTAG PBSRC PBBLD PBLOG" >> $PBBLD/.env
 echo "        Environment saved to $PBBLD/.env"
 echo ""
 
+echo "toolchain start: " >> $PBSTATS
+date >> $PBSTATS
+date +%s >> $PBSTATS
+echo "" >> $PBSTATS
+
 echo "  [*] Building toolchain..."
 echo ""
 LFS="$PBBLD/bld"
@@ -86,6 +98,12 @@ sudo chown -v $PBUSER $LFS/tools.$PBUSER
 
 source bld-toolchain.sh
 
+echo "toolchain end: " >> $PBSTATS
+date >> $PBSTATS
+date +%s >> $PBSTATS
+echo "" >> $PBSTATS
+
+
 echo "  [*] Preparing SDK Environment..."
 echo ""
 cd $PPWD
@@ -96,11 +114,21 @@ echo "  [*] Building KaOS SDK..."
 echo ""
 cd $PPWD
 
+echo "SDK phase 1 start: " >> $PBSTATS
+date >> $PBSTATS
+date +%s >> $PBSTATS
+echo "" >> $PBSTATS
+
 echo "  [.] SDK phase 1"
 sudo chroot "$LFS" $TOOLS/bin/env -i \
     HOME=/root TERM="$TERM" PS1='\u:\w\$ ' \
     PATH=/bin:/usr/bin:/sbin:/usr/sbin:$TOOLS/bin \
     $TOOLS/bin/bash -c /src/bld-sdk.sh
+
+echo "SDK phase 2 start: " >> $PBSTATS
+date >> $PBSTATS
+date +%s >> $PBSTATS
+echo "" >> $PBSTATS
 
 echo "  [.] SDK phase 2"
 sudo chroot "$LFS" $TOOLS/bin/env -i \
@@ -108,14 +136,28 @@ sudo chroot "$LFS" $TOOLS/bin/env -i \
     PATH=/bin:/usr/bin:/sbin:/usr/sbin:$TOOLS/bin \
     /bin/bash -c /src/bld-sdk2.sh
 
+echo "SDK phase 3 start: " >> $PBSTATS
+date >> $PBSTATS
+date +%s >> $PBSTATS
+echo "" >> $PBSTATS
+
 echo "  [.] SDK phase 3"
 sudo chroot "$LFS" $TOOLS/bin/env -i \
     HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
     $TOOLS/bin/bash -c /src/bld-sdk3.sh
 
+echo "Build Cleanup: " >> $PBSTATS
+date >> $PBSTATS
+date +%s >> $PBSTATS
+echo "" >> $PBSTATS
+
 echo "  [.] Cleaning SDK environment"
 sudo mv $LFS$TOOLS $LFS/..
 sudo umount $LFS/dev/pts $LFS/dev/shm $LFS/dev $LFS/proc $LFS/sys $LFS/run
 sudo mv $LFS/src $LFS/../src2
 
+echo "Build complete: " >> $PBSTATS
+date >> $PBSTATS
+date +%s >> $PBSTATS
+echo "" >> $PBSTATS
