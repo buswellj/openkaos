@@ -270,7 +270,7 @@ SED=sed ../gcc/configure --prefix=/usr \
     --disable-multilib --disable-bootstrap --with-system-zlib 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 make 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 ulimit -s 32768
-make -k check 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
+#make -k check 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 ../gcc/contrib/test_summary 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 make install 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 ln -sv ../usr/bin/cpp /lib
