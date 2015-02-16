@@ -161,3 +161,16 @@ echo "Build complete: " >> $PBSTATS
 date >> $PBSTATS
 date +%s >> $PBSTATS
 echo "" >> $PBSTATS
+
+echo "  [*] Build complete. "
+echo "  [-] Build Information: "
+echo ""
+echo "        Build ID is $PBNOW"
+echo "        User is $PBUSER ($PBHOME)"
+echo "        Building $PBTAG in $PBBLD"
+echo "        Source is $PBSRC"
+echo "        Logs stored in $PBLOG"
+echo ""
+echo "        Run chroot-fcs.sh bld-$PBNOW to enter chroot environment"
+echo ""
+
