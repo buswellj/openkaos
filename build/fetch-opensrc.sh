@@ -18,13 +18,13 @@ echo ""
 echo "  [.] Loading environment "
 
 PBHERE=`pwd`
-PBENV=`cat ~/kaos-ws/.current`
+PBENV=`cat ~/openkaos/.current`
 PBNOW=`date +%s`
 PBTAG="opensrc-$PBNOW"
 export PBHERE PBENV PBNOW PBTAG
 
 echo "  [.] Retrieving Open Source components "
-cd ~/kaos-ws/$PBENV
+cd ~/openkaos/$PBENV
 mkdir -p pkg/$PBTAG
 chmod a+wt pkg/$PBTAG
 wget -4 -i $PBHERE/opensrc-list -P pkg/$PBTAG

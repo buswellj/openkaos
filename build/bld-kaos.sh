@@ -16,7 +16,7 @@ cd $PPWD
 PBVER="4.0.0"
 PBUSER=`whoami`
 PBNOW=`date +%s`
-PBWS="$PBHOME/kaos-ws"
+PBWS="$PBHOME/openkaos"
 PBTAG=`cat $PBWS/.current`
 
 export PPWD PBHOME PBVER PBUSER PBNOW PBWS PBTAG

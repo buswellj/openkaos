@@ -17,9 +17,9 @@ echo "Build Environment: $1"
 echo ""
 
 echo "  [.] Loading environment "
-PBCUR=`cat ~/kaos-ws/.current`
+PBCUR=`cat ~/openkaos/.current`
 export PBCUR
-PBENV="/home/$USER/kaos-ws/$PBCUR/$1"
+PBENV="/home/$USER/openkaos/$PBCUR/$1"
 export PBENV
 source $PBENV/.env
 LFS="$PBWS/$PBTAG/$1/bld/"

@@ -18,7 +18,7 @@ PBVER="4.0.0"
 PBUSER=`whoami`
 PBNOW=`date +%s`
 PBTAG="kaos-$PBNOW"
-PBWS="$PBHOME/kaos-ws/$PBTAG"
+PBWS="$PBHOME/openkaos/$PBTAG"
 
 export PBHERE PBHOME PBVER PBUSER PBTAG PBWS
 
@@ -34,6 +34,6 @@ echo ""
 
 mkdir -p $PBWS
 echo "The active workspace is now $PBWS"
-echo $PBTAG > $PBHOME/kaos-ws/.current
+echo $PBTAG > $PBHOME/openkaos/.current
 echo ""
 
