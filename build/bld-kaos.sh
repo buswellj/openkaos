@@ -34,9 +34,10 @@ then
  echo ""
  echo "Usage:"
  echo ""
- echo "./bld-kaos.sh <opensrc-src-id>"
+ echo "./bld-kaos.sh <opensrc-src-id> [clean]"
  echo ""
  echo "opensrc-src-id == The output from the fetch-opensrc script"
+ echo "clean == always build toolchain even if it exists"
  echo ""
  exit
 fi
@@ -46,6 +47,12 @@ PBBLD="$PBWS/$PBTAG/bld-$PBNOW"
 PBLOG="$PBWS/$PBTAG/log-$PBNOW"
 PBSTATS="$PBWS/$PBTAG/stats-$PBNOW"
 export PBSRC PBBLD PBLOG PBSTATS
+
+if [ -e $PBWS/.toolchain ]; then
+ PBSKIPTOOLS=1
+ PBTOOLCHAIN=`cat $PBWS/.toolchain`
+ export PBSKIPTOOLS PBTOOLCHAIN
+fi
 
 echo "  [-] Starting Build ID# $PBNOW"
 echo "  [.] Creating Build and Log directories..."
@@ -65,6 +72,13 @@ echo "        Source is $PBSRC"
 echo "        Logs stored in $PBLOG"
 echo ""
 
+if [ -n "$2" ]
+then
+ echo "  [*] Performing Clean Build $2"
+ unset PBSKIPTOOLS
+ unset PBTOOLCHAIN
+fi
+
 echo "PBUSER=$PBUSER" > $PBBLD/.env
 echo "PBHOME=$PBHOME" >> $PBBLD/.env
 echo "PBWS=$PBWS" >> $PBBLD/.env
@@ -76,33 +90,59 @@ echo "export PBUSER PBHOME PBWS PBTAG PBSRC PBBLD PBLOG" >> $PBBLD/.env
 echo "        Environment saved to $PBBLD/.env"
 echo ""
 
-echo "toolchain start: " >> $PBSTATS
-date >> $PBSTATS
-date +%s >> $PBSTATS
-echo "" >> $PBSTATS
+if [ -n "$PBSKIPTOOLS" ]; then
+ echo "toolchain skipped using $PBTOOLCHAIN: " >> $PBSTATS
+ date >> $PBSTATS
+ date +%s >> $PBSTATS
+ echo "" >> $PBSTATS
+ echo "  [*] Using toolchain: $PBTOOLCHAIN"
+ LFS="$PBBLD/bld"
+ TOOLS="/tools.$PBUSER"
+ export LFS TOOLS
+ echo "        Build is $LFS"
+ echo "        Tools is $TOOLS"
+ echo ""
+ cd $PPWD
+ sudo mkdir -p $LFS/tools.$PBUSER
+ sudo rm -rf $TOOLS
+ sudo ln -sv $LFS/tools.$PBUSER $TOOLS
+ sudo chown -v $PBUSER $LFS/tools.$PBUSER
+ sudo cp -a $PBTOOLCHAIN/tools.$PBUSER/* $TOOLS
+ echo "toolchain skipped end: " >> $PBSTATS
+ date >> $PBSTATS
+ date +%s >> $PBSTATS
+ echo "" >> $PBSTATS
+else
+ echo "toolchain start: " >> $PBSTATS
+ date >> $PBSTATS
+ date +%s >> $PBSTATS
+ echo "" >> $PBSTATS
 
-echo "  [*] Building toolchain..."
-echo ""
-LFS="$PBBLD/bld"
-TOOLS="/tools.$PBUSER"
-export LFS TOOLS
-echo "        Build is $LFS"
-echo "        Tools is $TOOLS"
-echo ""
+ echo "  [*] Building toolchain..."
+ echo ""
+ LFS="$PBBLD/bld"
+ TOOLS="/tools.$PBUSER"
+ export LFS TOOLS
+ echo "        Build is $LFS"
+ echo "        Tools is $TOOLS"
+ echo ""
 
-cd $PPWD
-sudo mkdir -p $LFS/tools.$PBUSER
-sudo rm -rf $TOOLS
-sudo ln -sv $LFS/tools.$PBUSER $TOOLS
-sudo chown -v $PBUSER $LFS/tools.$PBUSER
+ cd $PPWD
+ sudo mkdir -p $LFS/tools.$PBUSER
+ sudo rm -rf $TOOLS
+ sudo ln -sv $LFS/tools.$PBUSER $TOOLS
+ sudo chown -v $PBUSER $LFS/tools.$PBUSER
 
-source bld-toolchain.sh
+ source bld-toolchain.sh
 
-echo "toolchain end: " >> $PBSTATS
-date >> $PBSTATS
-date +%s >> $PBSTATS
-echo "" >> $PBSTATS
+ echo "toolchain end: " >> $PBSTATS
+ date >> $PBSTATS
+ date +%s >> $PBSTATS
+ echo "" >> $PBSTATS
+fi
 
+unset PBSKIPTOOLS
+unset PBTOOLCHAIN
 
 echo "  [*] Preparing SDK Environment..."
 echo ""
