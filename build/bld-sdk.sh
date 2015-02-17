@@ -85,6 +85,11 @@ chgrp -v utmp /var/run/utmp /var/log/lastlog
 chmod -v 664 /var/run/utmp /var/log/lastlog
 chmod -v 600  /var/log/btmp
 
+cat > /etc/resolv.conf << "EOF"
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+EOF
+
 echo "  [.] Linux API Headers"
 cd $SRC/linux
 make mrproper 1>>$LOGS/linux.log 2>>$LOGS/linux.err
