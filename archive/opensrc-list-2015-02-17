@@ -40,7 +40,7 @@ http://www.greenwoodsoftware.com/less/less-458.tar.gz
 http://www.linuxfromscratch.org/lfs/downloads/development/lfs-bootscripts-20150208.tar.bz2
 https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.24.tar.xz
 http://download.savannah.gnu.org/releases/libpipeline/libpipeline-1.4.0.tar.gz
-http://ftp.gnu.org/gnu/libtool/libtool-2.4.6.tar.xz
+http://ftp.gnu.org/gnu/libtool/libtool-2.4.5.tar.xz
 https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.19.tar.xz
 http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.xz
 http://ftp.gnu.org/gnu/make/make-4.1.tar.bz2
@@ -50,7 +50,7 @@ http://www.multiprecision.org/mpc/download/mpc-1.0.2.tar.gz
 http://www.mpfr.org/mpfr-3.1.2/mpfr-3.1.2.tar.xz
 http://ftp.gnu.org/gnu//ncurses/ncurses-5.9.tar.gz
 http://ftp.gnu.org/gnu/patch/patch-2.7.4.tar.xz
-http://www.cpan.org/src/5.0/perl-5.20.2.tar.bz2
+http://www.cpan.org/src/5.0/perl-5.20.1.tar.bz2
 http://pkgconfig.freedesktop.org/releases/pkg-config-0.28.tar.gz
 http://sourceforge.net/projects/procps-ng/files/Production/procps-ng-3.3.10.tar.xz
 http://downloads.sourceforge.net/project/psmisc/psmisc/psmisc-22.21.tar.gz
@@ -76,6 +76,7 @@ https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/glibc-2.21-fhs-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/kbd-2.0.2-backspace-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/mpfr-3.1.2-upstream_fixes-3.patch
+https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/perl-5.20.1-infinite_recurse_fix-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/readline-6.3-upstream_fixes-3.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/sysvinit-2.88dsf-consolidated-1.patch
 http://downloads.sourceforge.net/cracklib/cracklib-2.9.2.tar.gz

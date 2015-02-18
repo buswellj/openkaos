@@ -66,7 +66,6 @@ cd $SRC/perl
 echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
 export BUILD_ZLIB=False
 export BUILD_BZIP2=0
-patch -Np1 -i ../patches/perl-5.20.1-infinite_recurse_fix-1.patch 1>>$LOGS/perl.log 2>>$LOGS/perl.err
 sh Configure -des -Dprefix=/usr \
                   -Dvendorprefix=/usr           \
                   -Dman1dir=/usr/share/man/man1 \
