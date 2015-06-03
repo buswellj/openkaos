@@ -86,9 +86,9 @@ make install 1>>$PBLOG/strap_gcc.log 2>>$PBLOG/strap_gcc.err
 cd $PBBLD/src1
 echo "  [.] building kernel header api"
 cd linux
-make mrproper
-make headers_check
-make INSTALL_HDR_PATH=dest headers_install
+make mrproper 1>>$PBLOG/strap_kernel_headers.log 2>>$PBLOG/strap_kernel_headers.err
+make headers_check 1>>$PBLOG/strap_kernel_headers.log 2>>$PBLOG/strap_kernel_headers.err
+make INSTALL_HDR_PATH=dest headers_install 1>>$PBLOG/strap_kernel_headers.log 2>>$PBLOG/strap_kernel_headers.err
 mkdir -p $TOOLS/include
 cp -rv dest/include/* $TOOLS/include
 
