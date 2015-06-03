@@ -23,6 +23,8 @@ PBNOW=`date +%s`
 PBTAG="opensrc-$PBNOW"
 export PBHERE PBENV PBNOW PBTAG
 
+echo $PBTAG > ~/openkaos/.latest-src
+
 echo "  [.] Retrieving Open Source components "
 cd ~/openkaos/$PBENV
 mkdir -p pkg/$PBTAG
