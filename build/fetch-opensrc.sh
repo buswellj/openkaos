@@ -72,11 +72,15 @@ mv bash-* bash
 mv bc-* bc
 mv binutils-* binutils
 mv bison-* bison
+mv bridge-utils-* bridge-utils
+mv busybox-* busybox
 mv bzip2-* bzip2
 mv check-* check
 mv coreutils-* coreutils
+mv cpio-* cpio
 mv cracklib-* cracklib
 mv dejagnu-* dejagnu
+mv dhcpcd-* dhcpcd
 mv diffutils-* diffutils
 mv e2fsprogs-* e2fsprogs
 mv eudev-* eudev
@@ -90,6 +94,7 @@ mv gcc-* gcc
 cp -a gcc gcc2
 mv gdbm-* gdbm
 mv gettext-* gettext
+mv git-* git
 mv glibc-* glibc
 mv gmp-* gmp
 mv glib-* glib
@@ -104,6 +109,7 @@ mv iana-etc-* iana-etc
 mv inetutils-* inetutils
 mv intltool-* intltool
 mv iproute2-* iproute2
+mv iptables-* iptables
 mv kbd-* kbd
 mv kmod* kmod
 mv less-* less
@@ -111,6 +117,7 @@ mv libcap-* libcap
 mv libpipeline-* libpipeline
 mv libtool-* libtool
 mv linux-* linux
+mv Linux-PAM-* linux-pam
 mv m4-* m4
 mv make-* make
 mv man-db-* man-db
@@ -122,6 +129,9 @@ mv mpfr-* mpfr
 cp -a mpfr gcc/mpfr
 cp -a mpfr gcc2/mpfr
 mv ncurses-* ncurses
+mv openssh-* openssh
+mv openssl-* openssl
+mv parted-* parted
 mv patch-* patch
 mv pcre-* pcre
 mv perl-* perl
@@ -131,6 +141,7 @@ mv procps-* procps
 mv readline-* readline
 mv sed-* sed
 mv shadow-* shadow
+mv squashfs* squashfs
 mv sysklogd-* sysklogd
 mv syslinux* syslinux
 mv tar-* tar

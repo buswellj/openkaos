@@ -66,6 +66,16 @@ if [ -e bison ]; then
 else
  echo "  [.] bison missing "
 fi
+if [ -e bridge-utils ]; then
+ echo "  [.] bridge-utils ok "
+else
+ echo "  [.] bridge-utils missing "
+fi
+if [ -e busybox ]; then
+ echo "  [.] busybox ok "
+else
+ echo "  [.] busybox missing "
+fi
 if [ -e bzip2 ]; then
  echo "  [.] bzip2 ok "
 else
@@ -75,6 +85,11 @@ if [ -e check ]; then
  echo "  [.] check ok "
 else
  echo "  [.] check missing "
+fi
+if [ -e cpio ]; then
+ echo "  [.] cpio ok "
+else
+ echo "  [.] cpio missing "
 fi
 if [ -e coreutils ]; then
  echo "  [.] coreutils ok "
@@ -90,6 +105,11 @@ if [ -e dejagnu ]; then
  echo "  [.] dejagnu ok "
 else
  echo "  [.] dejagnu missing "
+fi
+if [ -e dhcpcd ]; then
+ echo "  [.] dhcpcd ok "
+else
+ echo "  [.] dhcpcd missing "
 fi
 if [ -e diffutils ]; then
  echo "  [.] diffutils ok "
@@ -155,6 +175,11 @@ if [ -e gettext ]; then
  echo "  [.] gettext ok "
 else
  echo "  [.] gettext missing "
+fi
+if [ -e git ]; then
+ echo "  [.] git ok "
+else
+ echo "  [.] git missing "
 fi
 if [ -e glibc ]; then
  echo "  [.] glibc ok "
@@ -261,6 +286,11 @@ if [ -e linux ]; then
 else
  echo "  [.] linux missing "
 fi
+if [ -e linux-pam ]; then
+ echo "  [.] linux-pam ok "
+else
+ echo "  [.] linux-pam missing "
+fi
 if [ -e m4 ]; then
  echo "  [.] m4 ok "
 else
@@ -316,6 +346,21 @@ if [ -e ncurses ]; then
 else
  echo "  [.] ncurses missing "
 fi
+if [ -e openssh ]; then
+ echo "  [.] openssh ok "
+else
+ echo "  [.] openssh missing "
+fi
+if [ -e openssl ]; then
+ echo "  [.] openssl ok "
+else
+ echo "  [.] openssl missing "
+fi
+if [ -e parted ]; then
+ echo "  [.] parted ok "
+else
+ echo "  [.] parted missing "
+fi
 if [ -e patch ]; then
  echo "  [.] patch ok "
 else
@@ -360,6 +405,11 @@ if [ -e shadow ]; then
  echo "  [.] shadow ok "
 else
  echo "  [.] shadow missing "
+fi
+if [ -e squashfs ]; then
+ echo "  [.] squashfs ok "
+else
+ echo "  [.] squashfs missing "
 fi
 if [ -e sysklogd ]; then
  echo "  [.] sysklogd ok "

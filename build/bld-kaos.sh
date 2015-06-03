@@ -209,6 +209,12 @@ sudo chroot "$LFS" $TOOLS/bin/env -i \
     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
     $TOOLS/bin/bash -c /src/bld-sdk3.sh
 
+echo "  [.] SDK core build"
+sudo chroot "$LFS" $TOOLS/bin/env -i \
+    HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+    /bin/bash -c /src/bld-core.sh
+
 echo "Build Cleanup: " >> $PBSTATS
 date >> $PBSTATS
 date +%s >> $PBSTATS
