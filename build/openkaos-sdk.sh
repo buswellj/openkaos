@@ -21,6 +21,20 @@ export OKPWD OKVERSION
 OKSDK="$OKPWD/sdk/"
 export OKSDK
 
+echo "  [.] Testing Architecture "
+KARCH=`uname -m | grep x86_64`
+export KARCH
+
+if [ ! "$KARCH" ]
+ then
+  echo ""
+  echo "### ERROR ###"
+  echo ""
+  echo " This SDK requires an x86-64 platform!"
+  echo ""
+  exit
+fi
+
 echo "SDK version $OKVERSION"
 echo ""
 

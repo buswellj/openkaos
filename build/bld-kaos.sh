@@ -42,6 +42,20 @@ then
  exit
 fi
 
+echo "  [.] Testing Architecture "
+KARCH=`uname -m | grep x86_64`
+export KARCH
+
+if [ ! "$KARCH" ]
+ then
+  echo ""
+  echo "### ERROR ###"
+  echo ""
+  echo " This platform requires an x86-64 system!"
+  echo ""
+  exit
+fi
+
 PBSRC="$PBWS/$PBTAG/pkg/$1"
 PBBLD="$PBWS/$PBTAG/bld-$PBNOW"
 PBLOG="$PBWS/$PBTAG/log-$PBNOW"
