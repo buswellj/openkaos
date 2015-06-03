@@ -551,7 +551,7 @@ ln -sfv ../../lib/libhistory.so.6 /usr/lib/libhistory.so 1>>$LOGS/readline.log 2
 
 echo "  [.] bash "
 cd $SRC/bash
-patch -Np1 -i ../patches/bash-4.3.30-upstream_fixes-1.patch 1>$LOGS/bash.log 2>$LOGS/bash.err
+patch -Np1 -i ../patches/bash-4.3.30-upstream_fixes-2.patch 1>$LOGS/bash.log 2>$LOGS/bash.err
 ./configure --prefix=/usr --bindir=/bin \
     --htmldir=/usr/share/doc/bash-4.3.30 --without-bash-malloc \
     --with-installed-readline 1>>$LOGS/bash.log 2>>$LOGS/bash.err
