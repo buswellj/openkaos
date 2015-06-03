@@ -17,6 +17,9 @@ mkdir src1
 cp -a $PBSRC/* src1
 
 echo "  [.] Applying patches to source tree..."
+echo "      (*) ncurses 5.9 gcc5-buildfixes patch"
+cd $PBBLD/src1/ncurses
+patch -Np1 -i ../patches/ncurses-5.9-gcc5_buildfixes-1.patch 1>>$PBLOG/strap_srcpatches.log 2>>$PBLOG/strap_srcpatches.err
 echo ""
 cd $PBBLD
 
@@ -62,11 +65,12 @@ echo "  touch \$file.orig" >> gccsrc-adj.sh
 echo "done" >> gccsrc-adj.sh
 chmod 755 gccsrc-adj.sh
 ./gccsrc-adj.sh
-sed -i '/k prot/agcc_cv_libc_provides_ssp=yes' gcc/configure
+#sed -i '/k prot/agcc_cv_libc_provides_ssp=yes' gcc/configure
 mkdir -v ../gcc-build
 cd ../gcc-build
 ../gcc/configure \
     --target=$LFS_TGT --prefix=$TOOLS --with-local-prefix=$TOOLS \
+    --with-glibc-version=2.11 \
     --with-sysroot=$LFS --with-newlib --without-headers \
     --with-native-system-header-dir=$TOOLS/include \
     --disable-nls --disable-shared --disable-multilib \
@@ -95,10 +99,19 @@ cp -rv dest/include/* $TOOLS/include
 cd $PBBLD/src1
 echo "  [.] building glibc "
 mkdir -v glibc-build
+#
+# The fix below fixes a regression that impacts 32-bit architectures
+# Since this is a 64-bit platform, we just don't care!
+#
+#cd glibc
+#sed -e '/ia32/s/^/1:/' \
+#    -e '/SSE2/s/^1://' \
+#    -i  sysdeps/i386/i686/multiarch/mempcpy_chk.S
+#
 cd glibc-build
 ../glibc/configure --prefix=$TOOLS \
     --host=$LFS_TGT --build=$(../glibc/scripts/config.guess) \
-    --disable-profile \
+    --disable-profile --enable-obsolete-rpc \
     --enable-kernel=2.6.32 --with-headers=$TOOLS/include \
     libc_cv_forced_unwind=yes libc_cv_ctors_header=yes libc_cv_c_cleanup=yes 1>$PBLOG/strap_glibc.log 2>$PBLOG/strap_glibc.err
 make 1>>$PBLOG/strap_glibc.log 2>>$PBLOG/strap_glibc.err
@@ -128,11 +141,10 @@ cd gcc-build-libstdc
     --host=$LFS_TGT                      \
     --prefix=$TOOLS                      \
     --disable-multilib                   \
-    --disable-shared                     \
     --disable-nls                        \
     --disable-libstdcxx-threads          \
     --disable-libstdcxx-pch              \
-    --with-gxx-include-dir=$TOOLS/$LFS_TGT/include/c++/4.9.2 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
+    --with-gxx-include-dir=$TOOLS/$LFS_TGT/include/c++/5.1.0 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
 make 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
 make install 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
 
@@ -154,9 +166,6 @@ cp -v ld/ld-new $TOOLS/bin 1>>$PBLOG/strap_binutils2.log 2>>$PBLOG/strap_binutil
 cd $PBBLD/src1/gcc2
 cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
   `dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include-fixed/limits.h
-cp -v gcc/Makefile.in{,.tmp}
-sed 's/^T_CFLAGS =$/& -fomit-frame-pointer/' gcc/Makefile.in.tmp \
-  > gcc/Makefile.in
 
 echo "#!/bin/bash" > gccsrc-adj.sh
 echo "for file in \\" >> gccsrc-adj.sh
@@ -340,10 +349,11 @@ cd perl
 sh Configure -des -Dprefix=$TOOLS -Dlibs=-lm 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 make 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 cp -v perl cpan/podlators/pod2man $TOOLS/bin 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
-mkdir -pv $TOOLS/lib/perl5/5.20.1 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
-cp -Rv lib/* $TOOLS/lib/perl5/5.20.1 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
+mkdir -pv $TOOLS/lib/perl5/5.20.2 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
+cp -Rv lib/* $TOOLS/lib/perl5/5.20.2 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 cd $TOOLS/lib/perl5
-ln -sf 5.20.0 5.20.1
+ln -sf 5.20.0 5.20.2
+ln -sf 5.20.1 5.20.2
 cd $PBBLD/src1
 
 echo "  [.] building sed.. "

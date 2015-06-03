@@ -85,6 +85,10 @@ chgrp -v utmp /var/run/utmp /var/log/lastlog
 chmod -v 664 /var/run/utmp /var/log/lastlog
 chmod -v 600  /var/log/btmp
 
+
+#
+# These use the public Google nameservers by default
+#
 cat > /etc/resolv.conf << "EOF"
 nameserver 8.8.8.8
 nameserver 8.8.4.4
@@ -106,6 +110,20 @@ echo "  [.] glibc "
 cd $SRC/glibc
 #sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 patch -Np1 -i ../patches/glibc-2.21-fhs-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
+
+# Fix regression that impacts 32-bit architectures
+sed -e '/ia32/s/^/1:/' \
+    -e '/SSE2/s/^1://' \
+    -i  sysdeps/i386/i686/multiarch/mempcpy_chk.S 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
+
+# Fix security issue 
+sed -i '/glibc.*pad/{i\  buflen = buflen > pad ? buflen - pad : 0;
+                     s/ + pad//}' resolv/nss_dns/dns-host.c 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
+
+# Fix gcc 5 issue
+sed -e '/tst-audit2-ENV/i CFLAGS-tst-audit2.c += -fno-builtin' \
+    -i elf/Makefile 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
+
 mkdir -v ../glibc-build
 cd ../glibc-build
 #case `uname -m` in
@@ -115,7 +133,9 @@ cd ../glibc-build
     --disable-profile \
     --enable-kernel=2.6.32 --enable-obsolete-rpc  1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
 make 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
-# this seems to be broken...
+#
+#uncomment this to do checks
+#
 #make -k check 2>&1 | tee glibc-check-log
 #
 #grep Error glibc-check-log 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
@@ -153,7 +173,7 @@ ZONEINFO=/usr/share/zoneinfo
 mkdir -pv $ZONEINFO/{posix,right}
 
 for tz in etcetera southamerica northamerica europe africa antarctica  \
-          asia australasia backward pacificnew solar87 solar88 solar89 \
+          asia australasia backward pacificnew \
           systemv; do
     zic -L /dev/null   -d $ZONEINFO       -y "sh yearistype.sh" ${tz}
     zic -L /dev/null   -d $ZONEINFO/posix -y "sh yearistype.sh" ${tz}
@@ -230,7 +250,7 @@ expect -c "spawn ls" 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 #sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
 mkdir -v ../binutils-build
 cd ../binutils-build
-../binutils/configure --prefix=/usr --enable-shared 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
+../binutils/configure --prefix=/usr --enable-shared --disable-werror 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make tooldir=/usr 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make check 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make tooldir=/usr install 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
@@ -241,7 +261,7 @@ cd $SRC/gmp
 ###
 ### Note to compile 32-bit on 64-bit add ABI=32 prefix to this configure command
 ###
-./configure --prefix=/usr --enable-cxx 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
+./configure --prefix=/usr --enable-cxx --disable-static 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 make 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 make check 2>&1 | tee gmp-check-logmake check 2>&1 | tee gmp-check-log 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 awk '/tests passed/{total+=$2} ; END{print total}' gmp-check-log 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
@@ -250,14 +270,14 @@ make install 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 echo "  [.] mpfr"
 cd $SRC/mpfr
 patch -Np1 -i ../patches/mpfr-3.1.2-upstream_fixes-3.patch 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
-./configure --prefix=/usr --enable-thread-safe --docdir=/usr/share/doc/mpfr 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
+./configure --prefix=/usr --disable-static --enable-thread-safe --docdir=/usr/share/doc/mpfr 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make check 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make install 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 
 echo "  [.] mpc"
 cd $SRC/mpc
-./configure --prefix=/usr 1>>$LOGS/mpc.log 2>>$LOGS/mpc.err
+./configure --prefix=/usr --disable-static 1>>$LOGS/mpc.log 2>>$LOGS/mpc.err
 make 1>>$LOGS/mpc.log 2>>$LOGS/mpc.err
 make check 1>>$LOGS/mpc.log 2>>$LOGS/mpc.err
 make install 1>>$LOGS/mpc.log 2>>$LOGS/mpc.err
@@ -267,6 +287,7 @@ cd $SRC/gcc
 mv gmp kaos_magic.gmp
 mv mpc kaos_magic.mpc
 mv mpfr kaos_magic.mpfr
+patch -Np1 -i ../patches/gcc-5.1.0-upstream_fixes-1.patch 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 mkdir -v ../gcc-build
 cd ../gcc-build
 SED=sed ../gcc/configure --prefix=/usr \
@@ -276,10 +297,12 @@ SED=sed ../gcc/configure --prefix=/usr \
 make 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 ulimit -s 32768
 #make -k check 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
-../gcc/contrib/test_summary 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
+#../gcc/contrib/test_summary 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 make install 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 ln -sv ../usr/bin/cpp /lib
 ln -sv gcc /usr/bin/cc
+install -v -dm755 /usr/lib/bfd-plugins
+ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/5.1.0/liblto_plugin.so /usr/lib/bfd-plugins/
 echo 'main(){}' > dummy.c
 cc dummy.c -v -Wl,--verbose &> dummy.log
 readelf -l a.out | grep ': /lib' 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
@@ -335,23 +358,21 @@ make install 1>>$LOGS/pkg-config.log 2>>$LOGS/pkg-config.err
 
 echo "  [.] ncurses "
 cd $SRC/ncurses
-./configure --prefix=/usr --with-shared --without-debug --enable-widec --mandir=/usr/share/man --enable-pc-files 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
+patch -Np1 -i ../patches/ncurses-5.9-gcc5_buildfixes-1.patch 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
+sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
+./configure --prefix=/usr --with-shared --without-debug --without-normal --enable-pc-files --enable-widec --mandir=/usr/share/man --enable-pc-files 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 make 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 make install 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 mv -v /usr/lib/libncursesw.so.5* /lib 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
-ln -sfv ../../lib/libncursesw.so.5 /usr/lib/libncursesw.so 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
+ln -sfv ../../lib/$(readlink /usr/lib/libncursesw.so) /usr/lib/libncursesw.so 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 for lib in ncurses form panel menu ; do \
     rm -vf /usr/lib/lib${lib}.so ; \
     echo "INPUT(-l${lib}w)" > /usr/lib/lib${lib}.so ; \
-    ln -sfv lib${lib}w.a /usr/lib/lib${lib}.a ; \
     ln -sfv ${lib}w.pc /usr/lib/pkgconfig/${lib}.pc
 done
-ln -sfv libncurses++w.a /usr/lib/libncurses++.a 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 rm -vf /usr/lib/libcursesw.so 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 echo "INPUT(-lncursesw)" >/usr/lib/libcursesw.so
 ln -sfv libncurses.so /usr/lib/libcurses.so 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
-ln -sfv libncursesw.a /usr/lib/libcursesw.a 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
-ln -sfv libncurses.a /usr/lib/libcurses.a 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 
 echo "  [.] cracklib"
 cd $SRC/cracklib
@@ -374,7 +395,8 @@ make test 1>>$LOGS/cracklib.log 2>>$LOGS/cracklib.err
 echo "  [.] attr "
 cd $SRC/attr
 sed -i -e 's|/@pkg_name@|&-@pkg_version@|' include/builddefs.in
-./configure --prefix=/usr --bindir=/bin 1>>$LOGS/attr.log 2>>$LOGS/attr.err
+sed -i -e "/SUBDIRS/s|man2||" man/Makefile
+./configure --prefix=/usr --bindir=/bin --disable-static 1>>$LOGS/attr.log 2>>$LOGS/attr.err
 make  1>>$LOGS/attr.log 2>>$LOGS/attr.err
 make install install-dev install-lib  1>>$LOGS/attr.log 2>>$LOGS/attr.err
 chmod -v 755 /usr/lib/libattr.so  1>>$LOGS/attr.log 2>>$LOGS/attr.err
@@ -388,7 +410,7 @@ sed -i "s:| sed.*::g" test/{sbits-restore,cp,misc}.test
 sed -i -e "/TABS-1;/a if (x > (TABS-1)) x = (TABS-1);" \
     libacl/__acl_to_any_text.c
 ./configure --prefix=/usr \
-            --bindir=/bin \
+            --bindir=/bin --disable-static \
             --libexecdir=/usr/lib 1>>$LOGS/acl.log 2>>$LOGS/acl.err
 make 1>>$LOGS/acl.log 2>>$LOGS/acl.err
 make install install-dev install-lib 1>>$LOGS/acl.log 2>>$LOGS/acl.err
@@ -398,6 +420,7 @@ ln -sfv ../../lib/$(readlink /usr/lib/libacl.so) /usr/lib/libacl.so 1>>$LOGS/acl
 
 echo "  [.] libcap "
 cd $SRC/libcap
+sed -i '/install.*STALIBNAME/d' libcap/Makefile
 make 1>>$LOGS/libcap.log 2>>$LOGS/libcap.err
 make RAISE_SETFCAP=no prefix=/usr install 1>>$LOGS/libcap.log 2>>$LOGS/libcap.err
 chmod -v 755 /usr/lib/libcap.so 1>>$LOGS/libcap.log 2>>$LOGS/libcap.err
@@ -425,6 +448,7 @@ sed -i 's/1000/999/' etc/useradd
 make 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
 make install 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
 mv -v /usr/bin/passwd /bin
+sed -i 's/yes/no/' /etc/default/useradd 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
 
 pwconv 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
 grpconv 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
@@ -453,6 +477,10 @@ ln -sfv ../../lib/$(readlink /usr/lib/libprocps.so) /usr/lib/libprocps.so
 
 echo "  [.] e2fsprogs "
 cd $SRC/e2fsprogs
+# Fix security issue
+sed -e '/int.*old_desc_blocks/s/int/blk64_t/' \
+    -e '/if (old_desc_blocks/s/super->s_first_meta_bg/desc_blocks/' \
+    -i lib/ext2fs/closefs.c 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
 mkdir -v build
 cd build
 LIBS=-L$TOOLS/lib \
@@ -530,6 +558,8 @@ make install 1>>$LOGS/bison.log 2>>$LOGS/bison.err
 
 echo "  [.] grep "
 cd $SRC/grep
+# Fix potential security issue
+sed -i -e '/tp++/a  if (ep <= tp) break;' src/kwset.c 1>>$LOGS/grep.log 2>>$LOGS/grep.err
 ./configure --prefix=/usr \
     --bindir=/bin 1>>$LOGS/grep.log 2>>$LOGS/grep.err
 make 1>>$LOGS/grep.log 2>>$LOGS/grep.err
@@ -538,16 +568,15 @@ make install 1>>$LOGS/grep.log 2>>$LOGS/grep.err
 
 echo "  [.] readline "
 cd $SRC/readline
+patch -Np1 -i ../patches/readline-6.3-upstream_fixes-3.patch 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 sed -i '/MV.*old/d' Makefile.in
 sed -i '/{OLDSUFF}/c:' support/shlib-install
 patch -Np1 -i ../patches/readline-6.3-upstream_fixes-3.patch 1>>$LOGS/readline.log 2>>$LOGS/readline.err
-./configure --prefix=/usr 1>>$LOGS/readline.log 2>>$LOGS/readline.err
-make SHLIB_LIBS=-lncurses 1>>$LOGS/readline.log 2>>$LOGS/readline.err
-make install 1>>$LOGS/readline.log 2>>$LOGS/readline.err
-mv -v /lib/lib{readline,history}.a /usr/lib 1>>$LOGS/readline.log 2>>$LOGS/readline.err
-rm -v /lib/lib{readline,history}.so 1>>$LOGS/readline.log 2>>$LOGS/readline.err
-ln -sfv ../../lib/libreadline.so.6 /usr/lib/libreadline.so 1>>$LOGS/readline.log 2>>$LOGS/readline.err
-ln -sfv ../../lib/libhistory.so.6 /usr/lib/libhistory.so 1>>$LOGS/readline.log 2>>$LOGS/readline.err
+./configure --prefix=/usr --disable-static 1>>$LOGS/readline.log 2>>$LOGS/readline.err
+make SHLIB_LIBS=-lncurses install 1>>$LOGS/readline.log 2>>$LOGS/readline.err
+mv -v /usr/lib/lib{readline,history}.so.* /lib 1>>$LOGS/readline.log 2>>$LOGS/readline.err
+ln -sfv ../../lib/$(readlink /usr/lib/libreadline.so) /usr/lib/libreadline.so 1>>$LOGS/readline.log 2>>$LOGS/readline.err
+ln -sfv ../../lib/$(readlink /usr/lib/libhistory.so ) /usr/lib/libhistory.so 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 
 echo "  [.] bash "
 cd $SRC/bash

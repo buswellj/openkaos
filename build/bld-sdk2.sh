@@ -36,15 +36,13 @@ make install 1>>$LOGS/libtool.log 2>>$LOGS/libtool.err
 
 echo "  [.] gdbm "
 cd $SRC/gdbm
-./configure --prefix=/usr --enable-libgdbm-compat 1>>$LOGS/gdbm.log 2>>$LOGS/gdbm.err
+./configure --prefix=/usr --disable-static --enable-libgdbm-compat 1>>$LOGS/gdbm.log 2>>$LOGS/gdbm.err
 make 1>>$LOGS/gdbm.log 2>>$LOGS/gdbm.err
 make install 1>>$LOGS/gdbm.log 2>>$LOGS/gdbm.err
-make install-compat 1>>$LOGS/gdbm.log 2>>$LOGS/gdbm.err
-#install-info --dir-file=/usr/info/dir /usr/info/gdbm.info 1>>$LOGS/gdbm.log 2>>$LOGS/gdbm.err
 
 echo "  [.] expat "
 cd $SRC/expat
-./configure --prefix=/usr 1>$LOGS/expat.log 2>$LOGS/expat.err
+./configure --prefix=/usr --disable-static 1>$LOGS/expat.log 2>$LOGS/expat.err
 make 1>>$LOGS/expat.log 2>>$LOGS/expat.err
 make install 1>>$LOGS/expat.log 2>>$LOGS/expat.err
 
@@ -66,6 +64,7 @@ cd $SRC/perl
 echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
 export BUILD_ZLIB=False
 export BUILD_BZIP2=0
+patch -Np1 -i ../patches/perl-5.20.2-gcc5_fixes-1.patch 1>>$LOGS/perl.log 2>>$LOGS/perl.err
 sh Configure -des -Dprefix=/usr \
                   -Dvendorprefix=/usr           \
                   -Dman1dir=/usr/share/man/man1 \
@@ -113,7 +112,7 @@ make install 1>>$LOGS/gawk.log 2>>$LOGS/gawk.err
 
 echo "  [.] findutils "
 cd $SRC/findutils
-./configure --prefix=/usr --libexecdir=/usr/lib/findutils \
+./configure --prefix=/usr \
     --localstatedir=/var/lib/locate 1>>$LOGS/findutils.log 2>>$LOGS/findutils.err
 make 1>>$LOGS/findutils.log 2>>$LOGS/findutils.err
 make install 1>>$LOGS/findutils.log 2>>$LOGS/findutils.err
@@ -150,10 +149,9 @@ ln -sv tbl /usr/bin/gtbl
 
 echo "  [.] xz"
 cd $SRC/xz
-./configure --prefix=/usr --libdir=/lib --docdir=/usr/share/doc/xz 1>>$LOGS/xz.log 2>>$LOGS/xz.err
+./configure --prefix=/usr --disable-static --libdir=/lib --docdir=/usr/share/doc/xz 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 make 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 #make check 1>>$LOGS/xz.log 2>>$LOGS/xz.err
-#make pkgconfigdir=/usr/lib/pkgconfig install 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 make install 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 mv -v   /usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} /bin 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 mv -v /usr/lib/liblzma.so.* /lib 1>>$LOGS/xz.log 2>>$LOGS/xz.err
@@ -252,7 +250,6 @@ FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/usr --bindir=/bin --libexecdir=/u
 make 1>>$LOGS/tar.log 2>>$LOGS/tar.err
 make check 1>>$LOGS/tar.log 2>>$LOGS/tar.err
 make install 1>>$LOGS/tar.log 2>>$LOGS/tar.err
-perl tarman > /usr/share/man/man1/tar.1 1>>$LOGS/tar.log 2>>$LOGS/tar.err
 
 echo "  [.] texinfo"
 cd $SRC/texinfo
@@ -270,8 +267,13 @@ done
 echo "  [.] eudev"
 cd $SRC/eudev
 sed -r -i 's|/usr(/bin/test)|\1|' test/udev-test.pl 1>$LOGS/eudev.log 2>$LOGS/eudev.err
-BLKID_CFLAGS=-I/tools/include       \
-BLKID_LIBS='-L/tools/lib -lblkid'   \
+
+cat > config.cache << "EOF"
+HAVE_BLKID=1
+BLKID_LIBS="-lblkid"
+BLKID_CFLAGS="-I/tools/include"
+EOF
+
 ./configure --prefix=/usr           \
             --bindir=/sbin          \
             --sbindir=/sbin         \
@@ -281,20 +283,20 @@ BLKID_LIBS='-L/tools/lib -lblkid'   \
             --with-rootprefix=      \
             --with-rootlibdir=/lib  \
             --enable-split-usr      \
-            --enable-libkmod        \
-            --enable-rule_generator \
-            --enable-keymap         \
+            --enable-manpages       \
+            --enable-hwdb           \
             --disable-introspection \
             --disable-gudev         \
-            --disable-gtk-doc-html  \
-            --with-firmware-path=/lib/firmware 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
-make 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+            --disable-static        \
+            --config-cache          \
+            --disable-gtk-doc-html 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+LIBRARY_PATH=$TOOLS/lib make 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 mkdir -pv /lib/udev/rules.d 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 mkdir -pv /etc/udev/rules.d 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
-make install 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+make LD_LIBRARY_PATH=$TOOLS/lib install 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 cp -a $SRC/udev udev-lfs-20140408 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 make -f udev-lfs-20140408/Makefile.lfs install 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
-udevadm hwdb --update 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+LD_LIBRARY_PATH=$TOOLS/lib udevadm hwdb --update 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 
 echo "  [.] util-linux "
 cd $SRC/util-linux
@@ -308,6 +310,7 @@ mkdir -pv /var/lib/hwclock
             --disable-setpriv    \
             --disable-runuser    \
             --disable-pylibmount \
+            --disable-static     \
             --without-python     \
             --without-systemd    \
             --without-systemdsystemunitdir 1>$LOGS/util-linux.log 2>$LOGS/util-linux.err
@@ -317,7 +320,7 @@ make install 1>>$LOGS/util-linux.log 2>>$LOGS/util-linux.err
 echo "  [.] man-db"
 cd $SRC/man-db
 ./configure --prefix=/usr --libexecdir=/usr/lib \
-    --docdir=/usr/share/doc/man-db-2.6.6 \
+    --docdir=/usr/share/doc/man-db-2.7.1 \
     --sysconfdir=/etc --disable-setuid \
     --with-browser=/usr/bin/lynx --with-vgrind=/usr/bin/vgrind \
     --with-grap=/usr/bin/grap 1>>$LOGS/mandb.log 2>>$LOGS/mandb.err

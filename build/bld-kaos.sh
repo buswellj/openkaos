@@ -205,6 +205,12 @@ sudo mv $LFS$TOOLS $LFS/..
 sudo umount $LFS/dev/pts $LFS/dev/shm $LFS/dev $LFS/proc $LFS/sys $LFS/run
 sudo mv $LFS/src $LFS/../src2
 sudo mv $LFS/.tools $LFS/..
+sudo rm -rf $LFS/tmp/*
+sudo rm $LFS/usr/lib/lib{bfd,opcodes}.a
+sudo rm $LFS/usr/lib/libbz2.a
+sudo rm $LFS/usr/lib/lib{com_err,e2p,ext2fs,ss}.a
+sudo rm $LFS/usr/lib/libltdl.a
+sudo rm $LFS/usr/lib/libz.a
 
 echo "Build complete: " >> $PBSTATS
 date >> $PBSTATS
