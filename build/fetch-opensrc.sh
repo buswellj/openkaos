@@ -79,6 +79,7 @@ mv check-* check
 mv coreutils-* coreutils
 mv cpio-* cpio
 mv cracklib-* cracklib
+mv curl-* curl
 mv dejagnu-* dejagnu
 mv dhcpcd-* dhcpcd
 mv diffutils-* diffutils

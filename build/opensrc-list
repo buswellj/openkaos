@@ -94,8 +94,10 @@ http://www.busybox.net/downloads/busybox-1.23.2.tar.bz2
 https://www.kernel.org/pub/software/scm/git/git-2.4.2.tar.xz
 http://ftp.gnu.org/gnu/cpio/cpio-2.11.tar.bz2
 http://roy.marples.name/downloads/dhcpcd/dhcpcd-6.9.0.tar.bz2
-ftp://ftp.netfilter.org/pub/iptables/snapshot/iptables-20150603.tar.bz2
+http://www.netfilter.org/projects/iptables/files/iptables-1.4.21.tar.bz2
 http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 http://sourceforge.net/projects/bridge/files/bridge/bridge-utils-1.5.tar.gz
+http://curl.haxx.se/download/curl-7.42.1.tar.bz2
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/bridge-utils-1.5-linux_3.8_fix-1.patch
-
+https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/cpio-2.11-remove_gets.patch
+https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/openssl-1.0.2a-fix_parallel_build-2.patch

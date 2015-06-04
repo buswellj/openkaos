@@ -101,6 +101,11 @@ if [ -e cracklib ]; then
 else
  echo "  [.] cracklib missing "
 fi
+if [ -e curl ]; then
+ echo "  [.] curl ok "
+else
+ echo "  [.] curl missing "
+fi
 if [ -e dejagnu ]; then
  echo "  [.] dejagnu ok "
 else
