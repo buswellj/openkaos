@@ -155,7 +155,7 @@ make 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 make install 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 mv -v   /usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} /bin 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 mv -v /usr/lib/liblzma.so.* /lib 1>>$LOGS/xz.log 2>>$LOGS/xz.err
-ln -svf ../../lib/$(readlink /usr/lib/liblzma.so) /usr/lib/liblzma.so 1>>$LOGS/xz.log 2>>$LOGS/xz.err
+ln -svf ../../lib/$(readlink /lib/liblzma.so) /usr/lib/liblzma.so 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 
 echo "  [.] less"
 cd $SRC/less
