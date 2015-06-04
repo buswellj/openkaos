@@ -463,6 +463,11 @@ else
 fi
 
 echo ""
+echo "   [*] Verifiying Patch directory..."
+echo ""
+ls -la patches/
+
+echo ""
 echo "Source Directory is $1"
 echo ""
 cd $PBHERE

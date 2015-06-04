@@ -53,9 +53,9 @@ echo $APPQUEUE/openssl/lib > /etc/ld.so.conf.d/openssl.conf
 ldconfig
 
 cd $SRC/linux-pam
-./configure --prefix=/usr --sysconfdir=/etc --libdir=/usr/lib --enable-securedir=/lib/security 1>>$LOGS/linux-pam.log $LOGS/linux-pam.err
-make 1>>$LOGS/linux-pam.log $LOGS/linux-pam.err
-make install 1>>$LOGS/linux-pam.log $LOGS/linux-pam.err
+./configure --prefix=/usr --sysconfdir=/etc --libdir=/usr/lib --enable-securedir=/lib/security 1>>$LOGS/linux-pam.log 2>>$LOGS/linux-pam.err
+make 1>>$LOGS/linux-pam.log 2>>$LOGS/linux-pam.err
+make install 1>>$LOGS/linux-pam.log 2>>$LOGS/linux-pam.err
 
 cd $SRC/openssh
 install -v -m700 -d /var/lib/sshd

@@ -38,7 +38,7 @@ ABOKSRC=`cat ~/openkaos/.latest-src`
 export ABOKSRC
 
 echo " => Verifying Open Source code...."
-./verify-opensrc $ABOKSRC 1>>$APBLOG/verifysrc.log 2>>$APBLOG/verifysrc.err
+./verify-opensrc.sh $ABOKSRC 1>>$APBLOG/verifysrc.log 2>>$APBLOG/verifysrc.err
 
 echo " => Checking for missing source...."
 
