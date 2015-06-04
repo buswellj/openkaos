@@ -296,6 +296,11 @@ if [ -e linux-pam ]; then
 else
  echo "  [.] linux-pam missing "
 fi
+if [ -e lzo ]; then
+ echo "  [.] lzo ok "
+else
+ echo "  [.] lzo missing "
+fi
 if [ -e m4 ]; then
  echo "  [.] m4 ok "
 else
@@ -350,6 +355,11 @@ if [ -e ncurses ]; then
  echo "  [.] ncurses ok "
 else
  echo "  [.] ncurses missing "
+fi
+if [ -e nano ]; then
+ echo "  [.] nano ok "
+else
+ echo "  [.] nano missing "
 fi
 if [ -e openssh ]; then
  echo "  [.] openssh ok "
@@ -445,6 +455,11 @@ if [ -e util-linux ]; then
  echo "  [.] util-linux ok "
 else
  echo "  [.] util-linux  missing "
+fi
+if [ -e wget ]; then
+ echo "  [.] wget ok "
+else
+ echo "  [.] wget  missing "
 fi
 if [ -e XML-Parser ]; then
  echo "  [.] XML-Parser ok "

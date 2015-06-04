@@ -119,6 +119,7 @@ mv libpipeline-* libpipeline
 mv libtool-* libtool
 mv linux-* linux
 mv Linux-PAM-* linux-pam
+mv lzo-* lzo
 mv m4-* m4
 mv make-* make
 mv man-db-* man-db
@@ -130,6 +131,7 @@ mv mpfr-* mpfr
 cp -a mpfr gcc/mpfr
 cp -a mpfr gcc2/mpfr
 mv ncurses-* ncurses
+mv nano-* nano
 mv openssh-* openssh
 mv openssl-* openssl
 mv parted-* parted
@@ -149,6 +151,7 @@ mv tar-* tar
 mv tcl* tcl
 mv texinfo-* texinfo
 mv util-linux-* util-linux
+mv wget-* wget
 mv XML-Parser-* XML-Parser
 mv xz-* xz
 mv zlib-* zlib

@@ -34,6 +34,12 @@ patch -Np1 -i ../patches/cpio-2.11-remove_gets.patch 1>>$LOGS/cpio.log 2>>$LOGS/
 make 1>>$LOGS/cpio.log 2>>$LOGS/cpio.err
 make install 1>>$LOGS/cpio.log 2>>$LOGS/cpio.err
 
+cd $SRC/lzo
+./configure --prefix=/usr --enable-shared --disable-static 1>>$LOGS/lzo.log 2>>$LOGS/lzo.err
+make 1>>$LOGS/lzo.log 2>>$LOGS/lzo.err
+make install 1>>$LOGS/lzo.log 2>>$LOGS/lzo.err
+ldconfig
+
 cd $SRC/bridge-utils
 autoconf 1>>$LOGS/bridge-utils.log 2>>$LOGS/bridge-utils.err
 ./configure --prefix=/usr --sbindir=/sbin --bindir=/bin 1>>$LOGS/bridge-utils.log 2>>$LOGS/bridge-utils.err
@@ -88,7 +94,7 @@ ldconfig 1>>$LOGS/dhcpcd.log 2>>$LOGS/dhcpcd.err
 
 cd $SRC/squashfs/squashfs-tools
 mv Makefile Makefile.orig 1>>$LOGS/sqfs.log 2>>$LOGS/sqfs.err
-cat Makefile.orig | sed 's/#XZ_SUPPORT/XZ_SUPPORT/g' | sed 's/\/usr\/local\/bin/\/usr\/bin/g' > Makefile 1>>$LOGS/sqfs.log 2>>$LOGS/sqfs.err
+cat Makefile.orig | sed 's/#XZ_SUPPORT/XZ_SUPPORT/g' | sed 's/\/usr\/local\/bin/\/usr\/bin/g' > Makefile
 make 1>>$LOGS/sqfs.log 2>>$LOGS/sqfs.err
 make install 1>>$LOGS/sqfs.log 2>>$LOGS/sqfs.err
 
@@ -105,4 +111,10 @@ make 1>>$LOGS/iptables.log 2>>$LOGS/iptables.err
 make install 1>>$LOGS/iptables.log 2>>$LOGS/iptables.err
 ldconfig
 
+cd $SRC/nano
+./configure --prefix=/usr --sysconfdir=/etc --enable-utf8 1>>$LOGS/nano.log 2>>$LOGS/nano.err
+make 1>>$LOGS/nano.log 2>>$LOGS/nano.err
+make install 1>>$LOGS/nano.log 2>>$LOGS/nano.err
+
+ln -sf /sbin/busybox /usr/bin/vi
 exit
