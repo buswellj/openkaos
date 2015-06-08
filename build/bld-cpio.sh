@@ -37,6 +37,18 @@ ln -sfr $OKBFS/sbin $OKBFS/usr/sbin
 ln -sfr $OKBFS/lib $OKBFS/usr/lib
 ln -sfr $OKBFS/app/config $OKBFS/etc
 
+mknod $OKBFS/dev/tty c 5 0
+mknod $OKBFS/dev/console c 5 1
+mknod $OKBFS/dev/tty0 c 4 0
+mknod $OKBFS/dev/hvc0 c 229 0
+mknod $OKBFS/dev/hvc1 c 229 1
+mknod $OKBFS/dev/hvc2 c 229 2
+mknod $OKBFS/dev/hvc3 c 229 3
+mknod $OKBFS/dev/hvc4 c 229 4
+mknod $OKBFS/dev/hvc5 c 229 5
+mknod $OKBFS/dev/hvc6 c 229 6
+mknod $OKBFS/dev/hvc7 c 229 7
+
 cp -a /sbin/busybox $OKBFS/sbin/
 cp -a /app/queue/openssl/lib/libcrypto.so* $OKBFS/lib/
 cp -a /app/queue/openssl/lib/libssl.so* $OKBFS/lib/
@@ -93,10 +105,8 @@ cat > $OKBFS/init << EOF
 /sbin/busybox mknod /dev/sda5 b 8 5
 /sbin/busybox mknod /dev/sda6 b 8 6
 /sbin/busybox mknod /dev/sda7 b 8 7
-/sbin/busybox mknod /dev/tty c 5 0
 /sbin/busybox mknod /dev/tty1 c 4 1
 /sbin/busybox mknod /dev/null c 1 3
-/sbin/busybox mknod /dev/console c 5 1
 /sbin/busybox mknod /dev/random c 1 8
 /sbin/busybox mknod /dev/urandom c 1 9
 /sbin/busybox mknod /dev/ptmx c 5 2
@@ -110,14 +120,6 @@ cat > $OKBFS/init << EOF
 /sbin/busybox mknod /dev/loop7 b 7 7
 /sbin/busybox mknod /dev/xvda b 202 0
 /sbin/busybox mknod /dev/xvdb b 202 16
-/sbin/busybox mknod /dev/hvc0 c 229 0
-/sbin/busybox mknod /dev/hvc1 c 229 1
-/sbin/busybox mknod /dev/hvc2 c 229 2
-/sbin/busybox mknod /dev/hvc3 c 229 3
-/sbin/busybox mknod /dev/hvc4 c 229 4
-/sbin/busybox mknod /dev/hvc5 c 229 5
-/sbin/busybox mknod /dev/hvc6 c 229 6
-/sbin/busybox mknod /dev/hvc7 c 229 7
 /sbin/busybox chmod 666 /dev/ptmx
 /sbin/busybox chmod 666 /dev/tty
 /sbin/busybox chmod 666 /dev/null
