@@ -111,6 +111,11 @@ if [ -e dejagnu ]; then
 else
  echo "  [.] dejagnu missing "
 fi
+if [ -e dhcp ]; then
+ echo "  [.] dhcp ok "
+else
+ echo "  [.] dhcp missing "
+fi
 if [ -e dhcpcd ]; then
  echo "  [.] dhcpcd ok "
 else

@@ -59,7 +59,7 @@ cp -a /usr/sbin/sshd $OKBFS/sbin/
 cp -a /usr/bin/ssh $OKBFS/bin/
 cp -a /usr/bin/ssh-keygen $OKBFS/bin/
 cp -a /usr/bin/curl $OKBFS/bin/
-cp -a /app/queue/dhcpcd/sbin/dhcpcd $OKBFS/sbin/
+cp -a /usr/sbin/dhclient $OKBFS/sbin/
 cp -a /bin/login $OKBFS/bin/
 cp -a /sbin/iptables $OKBFS/sbin/
 cp -a /sbin/xtables-multi $OKBFS/sbin/
@@ -104,7 +104,8 @@ ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/sh
 
 mv $OKBFS/app/config/passwd $OKBFS/app/config/passwd.orig
 cat $OKBFS/app/config/passwd.orig | sed 's/bash/ash/g' > $OKBFS/app/config/passwd
-echo "sshusers:x:500:root:" >> $OKBFS/app/config/group
+echo "sshusers:x:500:root" >> $OKBFS/app/config/group
+rm -rf $OKBFS/app/config/passwd.orig
 
 
 cat > $OKBFS/init << EOF

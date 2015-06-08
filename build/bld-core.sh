@@ -12,6 +12,7 @@ TOOLS=`cat /.tools`
 SRC=/src
 SDK=/sdk
 APPCONFIG=/app/config
+APPSTATE=/app/status
 APPQ=/app/queue/pkg
 APPQUEUE=/app/queue
 LOGS=/src/logs
@@ -26,6 +27,8 @@ cd $SRC/
 mkdir -p $SDK/kernel
 mkdir -p $SDK/tools
 mkdir -p $APPQ
+mkdir -p $APPCONFIG
+mkdir -p $APPSTATE
 chown 0:0 -R $SDK
 chown 0:0 -R $APPQ
 
@@ -88,6 +91,12 @@ cd $SRC/git
 CFLAGS="$CFLAGS -I$APPQUEUE/openssl/include -L$APPQUEUE/openssl/lib" ./configure --prefix=/usr --with-openssl=$APPQUEUE/openssl --with-curl 1>>$LOGS/git.log 2>>$LOGS/git.err
 make 1>>$LOGS/git.log 2>>$LOGS/git.err
 make install 1>>$LOGS/git.log 2>>$LOGS/git.err
+
+cd $SRC/dhcp
+./configure --prefix=/usr --sysconfdir=$APPCONFIG/dhcp --localstatedir=$APPSTATE/dhcp \
+ --with-cli-lease-file=$APPSTATE/dhcp/dhclient.leases --with-cli6-lease-file=$APPSTATE/dhcp/dhclient6.leases 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
+make 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
+make install 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
 
 cd $SRC/dhcpcd
 ./configure --prefix=$APPQ/dhcpcd/6.9.0 --sysconfdir=$APPCONFIG/dhcpcd 1>>$LOGS/dhcpcd.log 2>>$LOGS/dhcpcd.err

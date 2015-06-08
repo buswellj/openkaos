@@ -81,6 +81,7 @@ mv cpio-* cpio
 mv cracklib-* cracklib
 mv curl-* curl
 mv dejagnu-* dejagnu
+mv dhcp-* dhcp
 mv dhcpcd-* dhcpcd
 mv diffutils-* diffutils
 mv e2fsprogs-* e2fsprogs
