@@ -349,13 +349,10 @@ cd perl
 sh Configure -des -Dprefix=$TOOLS -Dlibs=-lm 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 make 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 cp -v perl cpan/podlators/pod2man $TOOLS/bin 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
-mkdir -pv $TOOLS/lib/perl5/5.20.2 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
-cp -Rv lib/* $TOOLS/lib/perl5/5.20.2 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
-cd $TOOLS/lib/perl5
-ln -sf 5.20.0 5.20.2
-ln -sf 5.20.1 5.20.2
-cd $PBBLD/src1
+mkdir -pv $TOOLS/lib/perl5/5.22.0 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
+cp -Rv lib/* $TOOLS/lib/perl5/5.22.0 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 
+cd $PBBLD/src1
 echo "  [.] building sed.. "
 cd sed
 ./configure --prefix=$TOOLS 1>>$PBLOG/strap_sed.log 2>>$PBLOG/strap_sed.err
