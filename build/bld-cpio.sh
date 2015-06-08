@@ -149,7 +149,7 @@ cat > $OKBFS/init << EOF
 /sbin/iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 /sbin/iptables -A INPUT -p icmp -j ACCEPT
 /sbin/iptables -A INPUT -i lo -j ACCEPT
-/sbin/iptables -A INPUT -m state --state NEW -m tcp -p tcp -s 0.0.0.0 --dport 2222 -j ACCEPT
+/sbin/iptables -A INPUT -m state --state NEW -m tcp -p tcp -s 0.0.0.0/0 --dport 2222 -j ACCEPT
 /sbin/iptables -A INPUT -j DROP
 /sbin/iptables -A FORWARD -j REJECT --reject-with icmp-host-prohibited
 
