@@ -117,4 +117,8 @@ make 1>>$LOGS/nano.log 2>>$LOGS/nano.err
 make install 1>>$LOGS/nano.log 2>>$LOGS/nano.err
 
 ln -sf /sbin/busybox /usr/bin/vi
+
+cd $SRC
+source ./bld-cpio.sh
+
 exit
