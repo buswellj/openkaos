@@ -23,10 +23,15 @@ MAKEOPTS="-j$KAOSCPUS"
 export MAKEOPTS
 
 cd $SRC/
-mkdir -p $SDK
+mkdir -p $SDK/kernel
+mkdir -p $SDK/tools
 mkdir -p $APPQ
 chown 0:0 -R $SDK
 chown 0:0 -R $APPQ
+
+cp -a $SRC/bld-cpio.sh $SDK/tools
+cp -a $SRC/*-config $SDK/kernel
+cp -a $SRC/linux $SDK/kernel
 
 cd $SRC/cpio
 patch -Np1 -i ../patches/cpio-2.11-remove_gets.patch 1>>$LOGS/cpio.log 2>>$LOGS/cpio.err
