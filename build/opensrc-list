@@ -102,6 +102,7 @@ http://ftp.gnu.org/gnu/wget/wget-1.16.3.tar.xz
 http://ftp.gnu.org/gnu/nano/nano-2.4.1.tar.gz
 http://www.oberhumer.com/opensource/lzo/download/lzo-2.09.tar.gz
 ftp://ftp.isc.org/isc/dhcp/4.3.2/dhcp-4.3.2.tar.gz
+http://www.issihosts.com/haveged/haveged-1.9.1.tar.gz
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/bridge-utils-1.5-linux_3.8_fix-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/cpio-2.11-remove_gets.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/openssl-1.0.2a-fix_parallel_build-2.patch

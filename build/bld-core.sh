@@ -130,6 +130,11 @@ cd $SRC/nano
 make 1>>$LOGS/nano.log 2>>$LOGS/nano.err
 make install 1>>$LOGS/nano.log 2>>$LOGS/nano.err
 
+cd $SRC/haveged
+./configure --prefix=/usr --with-gnu-ld --with-pic --enable-shared --disable-static 1>>$LOGS/haveged.log 2>>$LOGS/haveged.err
+make 1>>$LOGS/haveged.log 2>>$LOGS/haveged.err
+make install 1>>$LOGS/haveged.log 2>>$LOGS/haveged.err
+
 ln -sf /sbin/busybox /usr/bin/vi
 
 cd $SRC

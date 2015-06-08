@@ -241,6 +241,11 @@ if [ -e gzip ]; then
 else
  echo "  [.] gzip missing "
 fi
+if [ -e haveged ]; then
+ echo "  [.] haveged ok "
+else
+ echo "  [.] haveged missing "
+fi
 if [ -e iana-etc ]; then
  echo "  [.] iana-etc ok "
 else

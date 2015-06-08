@@ -107,6 +107,7 @@ mv grep-* grep
 mv groff-* groff
 mv grub-* grub
 mv gzip-* gzip
+mv haveged-* haveged
 mv iana-etc-* iana-etc
 mv inetutils-* inetutils
 mv intltool-* intltool

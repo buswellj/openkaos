@@ -63,6 +63,7 @@ cp -a /usr/sbin/dhclient $OKBFS/sbin/
 cp -a /bin/login $OKBFS/bin/
 cp -a /sbin/iptables $OKBFS/sbin/
 cp -a /sbin/xtables-multi $OKBFS/sbin/
+cp -a /usr/sbin/haveged $OKBFS/sbin/
 
 cp -a /lib/ld-* $OKBFS/lib/
 cp -a /lib/libc-* $OKBFS/lib/
@@ -95,6 +96,7 @@ cp -a /usr/lib/libip4tc.so* $OKBFS/lib/
 cp -a /usr/lib/libip6tc.so* $OKBFS/lib/
 cp -a /usr/lib/libxtables.so* $OKBFS/lib/
 cp -a /lib/xtables/ $OKBFS/lib/
+cp -a /usr/lib/libhavege.so* $OKBFS/lib/
 
 cp -a /etc/{passwd,shadow,group,mtab,ld.so.conf,ld.so.cache,nsswitch.conf,resolv.conf} $OKBFS/app/config
 cp -a /usr/share/zoneinfo/UTC $OKBFS/app/config/localtime
@@ -143,6 +145,7 @@ cat > $OKBFS/init << EOF
 /sbin/busybox chmod 666 /dev/tty
 /sbin/busybox chmod 666 /dev/null
 /sbin/busybox echo "hvc0" >> /etc/securetty
+/sbin/haveged -w 1024
 
 /sbin/iptables -P INPUT ACCEPT
 /sbin/iptables -P OUTPUT ACCEPT
