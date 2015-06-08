@@ -51,6 +51,7 @@ mknod $OKBFS/dev/hvc7 c 229 7
 mknod $OKBFS/dev/rtc c 10 135
 mknod $OKBFS/dev/rtc0 c 254 0
 
+
 cp -a /sbin/busybox $OKBFS/sbin/
 cp -a /app/queue/openssl/lib/libcrypto.so* $OKBFS/lib/
 cp -a /app/queue/openssl/lib/libssl.so* $OKBFS/lib/
@@ -95,8 +96,17 @@ cp -a /usr/lib/libip6tc.so* $OKBFS/lib/
 cp -a /usr/lib/libxtables.so* $OKBFS/lib/
 cp -a /lib/xtables/ $OKBFS/lib/
 
-cp -a /etc/{passwd,shadow,group,mtab,ld.so.conf,ld.so.cache,nsswitch.conf} $OKBFS/app/config
+cp -a /etc/{passwd,shadow,group,mtab,ld.so.conf,ld.so.cache,nsswitch.conf,resolv.conf} $OKBFS/app/config
 cp -a /usr/share/zoneinfo/UTC $OKBFS/app/config/localtime
+
+ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/ash
+ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/sh
+
+mv $OKBFS/app/config/passwd $OKBFS/app/config/passwd.orig
+mv $OKBFS/app/config/shadow $OKBFS/app/config/shadow.orig
+cat $OKBFS/app/config/passwd | sed 's/bash/ash/g' > $OKBFS/app/config/passwd
+echo "sshusers:x:500:root:" >> $OKBFS/app/config/group
+
 
 cat > $OKBFS/init << EOF
 #!/sbin/busybox ash
@@ -134,8 +144,34 @@ cat > $OKBFS/init << EOF
 /sbin/busybox chmod 666 /dev/null
 /sbin/busybox echo "hvc0" >> /etc/securetty
 
+/sbin/iptables -P INPUT ACCEPT
+/sbin/iptables -P OUTPUT ACCEPT
+/sbin/iptables -P FORWARD ACCEPT
+/sbin/iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+/sbin/iptables -A INPUT -p icmp -j ACCEPT
+/sbin/iptables -A INPUT -i lo -j ACCEPT
+/sbin/iptables -A INPUT -m state --state NEW -m tcp -p tcp -s 0.0.0.0 --dport 2222 -j ACCEPT
+/sbin/iptables -A INPUT -j DROP
+/sbin/iptables -A FORWARD -j REJECT --reject-with icmp-host-prohibited
+
+/sbin/busybox mkdir -p /var/lib/sshd
+/sbin/busybox mkdir -p /tmp
+/sbin/busybox ip link set lo up
+/sbin/busybox ip link set eth0 up
+
+/sbin/busybox echo "Port 2222" > /etc/ssh/sshd_config
+/sbin/busybox echo "HostKey /etc/ssh/ssh_host_key" >> /etc/ssh/sshd_config
+/sbin/busybox echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+/sbin/busybox echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+/sbin/busybox echo "UsePam no" >> /etc/ssh/sshd_config
+/sbin/busybox echo "AllowGroups sshusers" >> /etc/ssh/sshd_config
+
+/bin/ssh-keygen -f /app/config/ssh/ssh_host_key -N '' -t ed25519
+
+/sbin/sshd -E /tmp/sshd.log
+
 /sbin/busybox echo ""
-/sbin/busybox echo "KaOS version 4.0.0"
+/sbin/busybox echo "OpenKaOS version 4.0.0"
 /sbin/busybox echo "Copyright (c) 2009-2015 Opaque Systems LLC"
 /sbin/busybox echo ""
 /sbin/busybox echo "http://www.opaquesystems.com"
