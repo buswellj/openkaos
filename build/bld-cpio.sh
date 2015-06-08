@@ -103,8 +103,7 @@ ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/ash
 ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/sh
 
 mv $OKBFS/app/config/passwd $OKBFS/app/config/passwd.orig
-mv $OKBFS/app/config/shadow $OKBFS/app/config/shadow.orig
-cat $OKBFS/app/config/passwd | sed 's/bash/ash/g' > $OKBFS/app/config/passwd
+cat $OKBFS/app/config/passwd.orig | sed 's/bash/ash/g' > $OKBFS/app/config/passwd
 echo "sshusers:x:500:root:" >> $OKBFS/app/config/group
 
 
@@ -198,15 +197,17 @@ find . | cpio --quiet -H newc -o > $SDK/openkaos.boot/OpenKaOS_boot-4.0.0.cpio
 cat > $SDK/tools/regen-initramfs << EOF
 #!/bin/bash
 
-SDKNOW=`date +%s`
-SDKPWD=`pwd`
+SDKNOW=\`date +%s\`
+SDKPWD=\`pwd\`
 export SDKNOW SDKPWD
 
-mv /sdk/openkaos.boot/OpenKaOS_boot-4.0.0.cpio /sdk/openkaos.boot/OpenKaOS_boot-4.0.0.cpio-$SDKNOW
+mv /sdk/openkaos.boot/OpenKaOS_boot-4.0.0.cpio /sdk/openkaos.boot/OpenKaOS_boot-4.0.0.cpio-\$SDKNOW
 cd /sdk/openkaos.fs/base/
 find . | cpio --quiet -H newc -o > /sdk/openkaos.boot/OpenKaOS_boot-4.0.0.cpio
-cd $SDKPWD
+cd \$SDKPWD
 
 EOF
+
+chmod 755 $SDK/tools/regen-initramfs
 
 
