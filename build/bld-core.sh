@@ -33,7 +33,7 @@ chown 0:0 -R $SDK
 chown 0:0 -R $APPQ
 
 cp -a $SRC/bld-cpio.sh $SDK/tools
-cp -a $SRC/*-config $SDK/kernel
+cp -a $SRC/linode-config $SDK/kernel
 cp -a $SRC/linux $SDK/kernel
 
 cd $SRC/cpio
