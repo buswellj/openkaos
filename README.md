@@ -1,4 +1,4 @@
-##OpenKaOS: the Linux Kernel Attached Operating System
+###OpenKaOS: the Linux Kernel Attached Operating System
 ===================================================================================
 
 OpenKaOS is an open source project to build lightweight Linux platforms
@@ -64,7 +64,7 @@ OpenKaOS is relative easy to understand, it performs the following tasks:
  7. SDK Stage 3 cleans up the base SDK environment
  8. SDK Stage 4 builds the core packages and cpio environment
  9. The user can now use the SDK environment and tweak the Linux kernel config
-10. The user then builds the kernel which produces the bzImage with OpenKaOS inside
+ 0. The user then builds the kernel which produces the bzImage with OpenKaOS inside
 
 
 OpenKaOS stores all of its files in $HOME/openkaos/. This project makes heavy use
@@ -315,12 +315,12 @@ stable and always working. No unexpected shocks for the users!
 OpenKaOS is intended to be a very lightweight framework for build Linux platforms.
 Contributions that provide suites of software on top of OpenKaOS (eg. X-Windows)
 should really be maintained as separate projects that use OpenKaOS as a base. If
-you have such a project, we will gladly list in our [Wiki](github.com/opaquesystems/openkaos/wiki)
+you have such a project, we will gladly list in our [Wiki](https://github.com/opaquesystems/openkaos/wiki)
 
 If you want to contribute bug fixes or other changes to our code, please follow
 this procedure:
 
- 1. Create a new [Issue](github.com/opaquesystems/openkaos/issues)
+ 1. Create a new [Issue](https://github.com/opaquesystems/openkaos/issues)
  2. Fork this project on GitHub
  3. Make changes to your fork
  4. Generate a Pull Request when you are ready
@@ -346,9 +346,9 @@ the combination of kernel + OS.
 
 Need more information or help?
 
-Visit our [Wiki](github.com/opaquesystems/openkaos/wiki) for further information.
+Visit our [Wiki](https://github.com/opaquesystems/openkaos/wiki) for further information.
 
-You can also file bugs, contribute changes or ask questions using [GitHub](github.com/opaquesystems/openkaos/issues)
+You can also file bugs, contribute changes or ask questions using [GitHub](https://github.com/opaquesystems/openkaos/issues)
 
 ====================================================================================
 
