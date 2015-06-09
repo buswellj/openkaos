@@ -150,6 +150,7 @@ cat > $OKBFS/init << EOF
 /sbin/busybox chmod 666 /dev/null
 /sbin/haveged -w 1024
 /sbin/busybox echo "hvc0" >> /etc/securetty
+/sbin/busybox echo "Available Entropy: " \`cat /proc/sys/kernel/random/entropy_avail\`
 
 /sbin/iptables -P INPUT ACCEPT
 /sbin/iptables -P OUTPUT ACCEPT
@@ -173,8 +174,9 @@ cat > $OKBFS/init << EOF
 /sbin/busybox echo "UsePam no" >> /etc/ssh/sshd_config
 /sbin/busybox echo "AllowGroups sshusers" >> /etc/ssh/sshd_config
 
-/sbin/busybox dhclient -v -4 -sf /sbin/dhclient-script eth0
+/sbin/dhclient -v -4 -sf /sbin/dhclient-script eth0
 
+/sbin/busybox echo "Available Entropy: " \`cat /proc/sys/kernel/random/entropy_avail\`
 /bin/ssh-keygen -f /app/config/ssh/ssh_host_key -N '' -t ed25519
 
 /sbin/sshd -E /tmp/sshd.log
@@ -185,6 +187,13 @@ cat > $OKBFS/init << EOF
 /sbin/busybox echo ""
 /sbin/busybox echo "http://www.opaquesystems.com"
 /sbin/busybox echo ""
+
+/sbin/busybox echo "" > /etc/motd
+/sbin/busybox echo "OpenKaOS version 4.0.0" >> /etc/motd
+/sbin/busybox echo "Copyright (c) 2009-2015 Opaque Systems LLC" >> /etc/motd
+/sbin/busybox echo "" >> /etc/motd
+/sbin/busybox echo "http://www.opaquesystems.com" >> /etc/motd
+/sbin/busybox echo "" >> /etc/motd
 
 while true
 do
