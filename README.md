@@ -643,6 +643,13 @@ this procedure:
 This entire project is released under the GNU General Public License (GPL), version 2.
 
 
+###Support
+======================================================================================
+
+This software is provided as-is without warranty or support. Use this project at
+your own risk.
+
+
 ###Why is it called OpenKaOS?
 ====================================================================================
 
