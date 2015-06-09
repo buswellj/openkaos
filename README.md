@@ -249,20 +249,332 @@ would have this), the SDK will work.
 ```
 [pagan@build-system-01 ~]$ mkdir myproject
 [pagan@build-system-01 ~]$ cd myproject/
-[pagan@build-system-01 myproject]$ tar xvf ~/openkaos/pkg/sdk/1433823730/sdk-1433823730.tar.xz 
+[pagan@build-system-01 myproject]$ sudo tar xvf ~/openkaos/pkg/sdk/1433823730/sdk-1433823730.tar.xz 
 ...
 (patiently wait)
 ...
+sdk/dev/null
+sdk/dev/console
+openkaos-sdk.sh
 ```
 
 It will take some time for this to uncompress. When its done you can invoke the SDK...
 
 ```
+[pagan@build-server-01 myproject]$ ./openkaos-sdk.sh 
 
+Open Kernel Attached Operating System (OpenKaOS)
+Copyright (c) 2009-2015 Opaque Systems, LLC
+
+  [.] Testing Architecture 
+SDK version 4.0.0
+
+ [.] Mounting Virtual File Systems
+mount: /dev bound on /home/pagan/myproject/sdk/dev.
+mount: devpts mounted on /home/pagan/myproject/sdk/dev/pts.
+mount: shm mounted on /home/pagan/myproject/sdk/dev/shm.
+mount: proc mounted on /home/pagan/myproject/sdk/proc.
+mount: sysfs mounted on /home/pagan/myproject/sdk/sys.
+
+ [.] Entering SDK
+root:/# 
 
 ```
 
+At this point you are now inside the SDK environment. Below you can see the output from some
+basic commands. It looks very much like a standard Linux system, the two differences are the /app and
+/sdk directories. The /app directory contains some packaged code, and you can use this area to install
+other open source components you build from source. The /sdk directory contains the development tools.
 
+
+```
+root:/# ls
+app  bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  sdk  srv  sys  tmp  usr  var
+
+root:/# cd sdk
+
+root:/sdk# ls
+kernel  openkaos.boot  openkaos.fs  tools
+
+root:/sdk# ls tools/
+bld-cpio.sh  regen-initramfs
+
+root:/sdk# ls kernel/
+linode-config  linux
+
+```
+
+Here is a quick explanation of these directories and files:
+
+ Location    |  Description
+ ------------|-------------------------------------------------
+ /sdk/openkaos.boot | This is where the completed cpio image is stored
+ /sdk/openkaos.fs | This is the root filesystem that will be embedded in the kernel
+ /sdk/kernel | Contains the Linux kernel source code
+ /sdk/tools/ | Contains useful tools
+ bld-cpio.sh | Script that is used to regenerate the entire example cpio
+ regen-initramfs | If you make changes to the initramfs this will regenerate the cpio
+ linode-config | This is an example Linode / Xen Guest Kernel Configuration
+ 
+You can use the linode-config as the base .config file for the kernel or you can build
+your own. We recommend starting with the linode-config and making changes. Additional
+examples for other cloud services and platforms will be added in the near future. 
+
+```
+ root:/# cd /sdk/kernel/linux
+ root:/sdk/kernel/linux# cp ../linode-config .config
+ root:/sdk/kernel/linux# make oldconfig
+ root:/sdk/kernel/linux# TERM=linux make menuconfig
+ root:/sdk/kernel/linux# make
+```
+ 
+
+###Linode Example
+====================================================================================
+
+Here is a quick run through using the SDK to build a working Linode Kernel...
+
+```
+[pagan@build-server-01 myproject]$ ./openkaos-sdk.sh 
+
+Open Kernel Attached Operating System (OpenKaOS)
+Copyright (c) 2009-2015 Opaque Systems, LLC
+
+  [.] Testing Architecture 
+SDK version 4.0.0
+
+ [.] Mounting Virtual File Systems
+mount: /dev bound on /home/pagan/myproject/sdk/dev.
+mount: devpts mounted on /home/pagan/myproject/sdk/dev/pts.
+mount: shm mounted on /home/pagan/myproject/sdk/dev/shm.
+mount: proc mounted on /home/pagan/myproject/sdk/proc.
+mount: sysfs mounted on /home/pagan/myproject/sdk/sys.
+
+ [.] Entering SDK
+root:/# 
+root:/# cd /sdk/
+kernel/        openkaos.boot/ openkaos.fs/   tools/         
+root:/# cd /sdk/kernel/
+linode-config  linux/         pkg-config/    
+root:/# cd /sdk/kernel/linux
+root:/sdk/kernel/linux# cp ../linode-config .config
+root:/sdk/kernel/linux# make oldconfig
+  HOSTCC  scripts/basic/fixdep
+  HOSTCC  scripts/kconfig/conf.o
+  SHIPPED scripts/kconfig/zconf.tab.c
+  SHIPPED scripts/kconfig/zconf.lex.c
+  SHIPPED scripts/kconfig/zconf.hash.c
+  HOSTCC  scripts/kconfig/zconf.tab.o
+  HOSTLD  scripts/kconfig/conf
+scripts/kconfig/conf --oldconfig Kconfig
+#
+# configuration written to .config
+#
+root:/sdk/kernel/linux# make
+... (sometime will pass) ...
+  CC      arch/x86/boot/video-bios.o
+  LD      arch/x86/boot/setup.elf
+  OBJCOPY arch/x86/boot/setup.bin
+  OBJCOPY arch/x86/boot/vmlinux.bin
+  HOSTCC  arch/x86/boot/tools/build
+  BUILD   arch/x86/boot/bzImage
+Setup is 15836 bytes (padded to 15872 bytes).
+System is 11098 kB
+CRC 2e6443bf
+Kernel: arch/x86/boot/bzImage is ready  (#1)
+kernel/Makefile:133: *** No X.509 certificates found ***
+  Building modules, stage 2.
+  MODPOST 2 modules
+  CC      drivers/xen/tmem.mod.o
+  LD [M]  drivers/xen/tmem.ko
+  CC      fs/nfs/flexfilelayout/nfs_layout_flexfiles.mod.o
+  LD [M]  fs/nfs/flexfilelayout/nfs_layout_flexfiles.ko
+
+```
+
+The OpenKaOS platform is stored in **/sdk/kernel/linux/arch/x86/boot/bzImage**
+
+There are a number of ways you can deploy a custom kernel with Linode. The easiest
+approach though is to do the following:
+
+ 1. Login / Create an account at Linode.com
+ 2. Add a new Linode
+ 3. Deploy Fedora Core on the Linode
+ 4. Power Up / Boot the Linode
+ 5. ssh into the Linode
+ 6. On the Linode : mkdir -p /boot/grub
+ 7. On the Linode : create /boot/grub/menu.lst
+ 8. scp /sdk/kernel/linux/arch/x86/boot/bzImage to the Linode-IP:/boot/OpenKaOS-4.0.0-1.boot
+ 9. In the Linode manager click on the Linode, edit the profile
+ 0. Change the kernel to pv-grub-x86_64 and reboot
+
+
+Here is an example from a Fedora release 21 console on Linode system:
+
+```
+Fedora release 21 (Twenty One)
+Kernel 4.0.4-x86_64-linode57 on an x86_64 (hvc0)
+
+test login: root
+Password: 
+Last login: Tue Jun  9 00:04:30 on hvc0
+[root@test ~]# cat /boot/grub/menu.lst 
+timeout 3
+
+title OpenKaOS
+root (hd0)
+kernel /boot/OpenKaOS-4.0.0-1.boot xencons=tty console=tty1 console=hvc0 earlyprintk=xen
+
+[root@test ~]#
+```
+
+Use the remote access tab in the Linode manager to gain console access. Check the boot,
+and you are presented with the shell prompt. Set the password for root.
+
+```
+systemd-shutdown[1]: Detaching loop devices.
+systemd-shutdown[1]: All loop devices detached.
+systemd-shutdown[1]: Detaching DM devices.
+systemd-shutdown[1]: All DM devices detached.
+systemd-shutdown[1]: Powering off.
+reboot: System halted
+
+[screen is terminating]
+[linode767639@atlanta506 lish]# 
+Job 24305576 - System Shutdown completed.
+[linode767639@atlanta506 lish]# 
+
+(you will see grub for a split second.. then a ton of kernel printks...)
+
+...
+
+console [netcon0] enabled
+netconsole: network logging started
+drivers/rtc/hctosys.c: unable to open rtc device (rtc0)
+Freeing unused kernel memory: 7460K (ffffffff81e99000 - ffffffff825e2000)
+Write protecting the kernel read-only data: 14336k
+Freeing unused kernel memory: 1932K (ffff88000181d000 - ffff880001a00000)
+Freeing unused kernel memory: 948K (ffff880001d13000 - ffff880001e00000)
+haveged: haveged starting up
+Available Entropy:  0
+Internet Systems Consortium DHCP Client 4.3.2
+Copyright 2004-2015 Internet Systems Consortium.
+All rights reserved.
+For info, please visit https://www.isc.org/software/dhcp/
+
+Listening on LPF/eth0/xx:xx:xx:xx:xx:xx
+Sending on   LPF/eth0/xx:xx:xx:xx:xx:xx
+Sending on   Socket/fallback
+DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 7
+DHCPREQUEST on eth0 to 255.255.255.255 port 67
+DHCPOFFER from 192.168.192.59
+DHCPACK from 192.168.166.251
+bound to 192.168.166.125 -- renewal in 34506 seconds.
+Available Entropy:  2496
+random: ssh-keygen urandom read with 28 bits of entropy available
+Generating public/private ed25519 key pair.
+Your identification has been saved in /app/config/ssh/ssh_host_key.
+Your public key has been saved in /app/config/ssh/ssh_host_key.pub.
+The key fingerprint is:
+SHA256:IRy2HMvpC2FwL33ga/epue95BJKJsQzhC75Rt/t4c2M root@openkaos
+The key's randomart image is:
++--[ED25519 256]--+
+|  . o.=          |
+|   +.O.B         |
+|  . *o&+oo       |
+| . + *+=+..      |
+|  o o = S. .     |
+|   o o + . ..    |
+|  .   o   o.     |
+|       oooE..    |
+|      ..=B+o     |
++----[SHA256]-----+
+
+OpenKaOS version 4.0.0
+Copyright (c) 2009-2015 Opaque Systems LLC
+
+http://www.opaquesystems.com
+
+ash: can't access tty; job control turned off
+/ # 
+
+```
+
+Here you can see on the console that the system has booted, note the Available Entropy should be
+around 2000 or higher before the ssh-keygen is executed. Now all you need to do is set the
+root password and you can start poking around on the system...
+
+```
+/ # passwd root
+Changing password for root
+New password: 
+Retype password: 
+Password for root changed by root
+
+/ # iptables -L -n
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0            state RELATED,ESTABLISHED
+ACCEPT     icmp --  0.0.0.0/0            0.0.0.0/0           
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0           
+ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0            state NEW tcp dpt:2222
+DROP       all  --  0.0.0.0/0            0.0.0.0/0           
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+REJECT     all  --  0.0.0.0/0            0.0.0.0/0            reject-with icmp-host-prohibited
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+```
+
+Note that OpenSSH is running on port 2222, and we have some basic iptables rules setup...
+
+```
+/ # netstat -nap
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:2222            0.0.0.0:*               LISTEN      1443/sshd
+tcp        0      0 :::2222                 :::*                    LISTEN      1443/sshd
+udp        0      0 0.0.0.0:64490           0.0.0.0:*                           1438/dhclient
+udp        0      0 0.0.0.0:68              0.0.0.0:*                           1438/dhclient
+udp        0      0 :::4542                 :::*                                1438/dhclient
+Active UNIX domain sockets (servers and established)
+Proto RefCnt Flags       Type       State         I-Node PID/Program name    Path
+/ # 
+
+```
+
+Now you can use the ssh client inside the SDK to access the running system in Linode via SSH.
+We recommend using the SDK because the default for the Linode example is to use the fast and secure
+encryption with ED25519, this requires a very new version of OpenSSH.
+
+```
+root:/sdk/kernel/linux# ssh -x -l root 192.168.166.125 -p 2222
+The authenticity of host '[192.168.166.125]:2222 ([192.168.166.125]:2222)' can't be established.
+ED25519 key fingerprint is SHA256:IRy2HMvpC2FwL33ga/epue95BJKJsQzhC75Rt/t4c2M.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '[192.168.166.125]:2222' (ED25519) to the list of known hosts.
+root@192.168.166.125's password: 
+
+OpenKaOS version 4.0.0
+Copyright (c) 2009-2015 Opaque Systems LLC
+
+http://www.opaquesystems.com
+
+~ # uname -a
+Linux openkaos 4.0.5-OpenKaOS-4.0.0 #2 SMP Tue Jun 9 05:29:33 UTC 2015 x86_64 GNU/Linux
+~ # uptime
+ 05:36:50 up 5 min,  0 users,  load average: 0.00, 0.00, 0.00
+~ # 
+
+```
+
+This is just an example, but its a good starting point to base a new Linux platform,
+distro or other project...
+
+Let us know what you do with this!
 
 ###Release Model
 ====================================================================================

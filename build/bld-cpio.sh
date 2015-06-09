@@ -112,7 +112,7 @@ mv $OKBFS/app/config/passwd $OKBFS/app/config/passwd.orig
 cat $OKBFS/app/config/passwd.orig | sed 's/bash/ash/g' > $OKBFS/app/config/passwd
 echo "sshusers:x:500:root" >> $OKBFS/app/config/group
 rm -rf $OKBFS/app/config/passwd.orig
-
+chmod 755 $OKBFS/sbin/dhclient-script
 
 cat > $OKBFS/init << EOF
 #!/sbin/busybox ash
