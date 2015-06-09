@@ -97,6 +97,7 @@ cd $SRC/dhcp
  --with-cli-lease-file=$APPSTATE/dhcp/dhclient.leases --with-cli6-lease-file=$APPSTATE/dhcp/dhclient6.leases 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
 make 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
 make install 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
+cat client/scripts/linux | sed 's/bash/ash/g' > /usr/sbin/dhclient-script
 
 cd $SRC/dhcpcd
 ./configure --prefix=$APPQ/dhcpcd/6.9.0 --sysconfdir=$APPCONFIG/dhcpcd 1>>$LOGS/dhcpcd.log 2>>$LOGS/dhcpcd.err

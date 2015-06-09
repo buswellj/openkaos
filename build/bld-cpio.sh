@@ -31,6 +31,8 @@ export OKBFS
 mkdir -p $OKBFS/{dev,bin,sbin,usr,lib}
 mkdir -p $OKBFS/app
 mkdir -p $OKBFS/app/config
+mkdir -p $OKBFS/app/status
+mkdir -p $OKBFS/app/status/dhcp
 ln -sfr $OKBFS/lib $OKBFS/lib64
 ln -sfr $OKBFS/bin $OKBFS/usr/bin
 ln -sfr $OKBFS/sbin $OKBFS/usr/sbin
@@ -60,6 +62,7 @@ cp -a /usr/bin/ssh $OKBFS/bin/
 cp -a /usr/bin/ssh-keygen $OKBFS/bin/
 cp -a /usr/bin/curl $OKBFS/bin/
 cp -a /usr/sbin/dhclient $OKBFS/sbin/
+cp -a /usr/sbin/dhclient-script $OKBFS/sbin/
 cp -a /bin/login $OKBFS/bin/
 cp -a /sbin/iptables $OKBFS/sbin/
 cp -a /sbin/xtables-multi $OKBFS/sbin/
@@ -103,6 +106,7 @@ cp -a /usr/share/zoneinfo/UTC $OKBFS/app/config/localtime
 
 ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/ash
 ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/sh
+ln -sfr $OKBFS/sbin/busybox $OKBFS/sbin/ip
 
 mv $OKBFS/app/config/passwd $OKBFS/app/config/passwd.orig
 cat $OKBFS/app/config/passwd.orig | sed 's/bash/ash/g' > $OKBFS/app/config/passwd
@@ -144,8 +148,8 @@ cat > $OKBFS/init << EOF
 /sbin/busybox chmod 666 /dev/ptmx
 /sbin/busybox chmod 666 /dev/tty
 /sbin/busybox chmod 666 /dev/null
-/sbin/busybox echo "hvc0" >> /etc/securetty
 /sbin/haveged -w 1024
+/sbin/busybox echo "hvc0" >> /etc/securetty
 
 /sbin/iptables -P INPUT ACCEPT
 /sbin/iptables -P OUTPUT ACCEPT
@@ -168,6 +172,8 @@ cat > $OKBFS/init << EOF
 /sbin/busybox echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
 /sbin/busybox echo "UsePam no" >> /etc/ssh/sshd_config
 /sbin/busybox echo "AllowGroups sshusers" >> /etc/ssh/sshd_config
+
+/sbin/busybox dhclient -v -4 -sf /sbin/dhclient-script eth0
 
 /bin/ssh-keygen -f /app/config/ssh/ssh_host_key -N '' -t ed25519
 
