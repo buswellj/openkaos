@@ -32,6 +32,16 @@ This document provides some project related information such as handling securit
 issues, release schedules, feature development, licensing and how to use this
 project.
 
+###Current Release
+====================================================================================
+
+The current release of OpenKaOS is 4.0.0. You can pull the source via git, but if
+prefer a pre-compiled version of the SDK you can find it here:
+
+ * [Release Notes](https://github.com/opaquesystems/openkaos/releases/tag/4.0.0)
+ * [SDK-4.0.0.tar.xz](https://github.com/opaquesystems/openkaos/releases/download/4.0.0/sdk-1433823730.tar.xz)
+ 
+
 
 ###Security Issues
 ====================================================================================
