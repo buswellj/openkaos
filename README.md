@@ -310,7 +310,7 @@ root:/sdk# ls tools/
 bld-cpio.sh  regen-initramfs
 
 root:/sdk# ls kernel/
-linode-config  linux
+config-linode  kvm-xen-linode  xen-linode  linux
 
 ```
 
@@ -341,10 +341,10 @@ examples for other cloud services and platforms will be added in the near future
 ```
  
 
-###Linode Example
+###Linode Xen Example
 ====================================================================================
 
-Here is a quick run through using the SDK to build a working Linode Kernel...
+Here is a quick run through using the SDK to build a working Linode Xen Kernel...
 
 ```
 [pagan@build-server-01 myproject]$ ./openkaos-sdk.sh 
@@ -369,7 +369,7 @@ kernel/        openkaos.boot/ openkaos.fs/   tools/
 root:/# cd /sdk/kernel/
 linode-config  linux/         pkg-config/    
 root:/# cd /sdk/kernel/linux
-root:/sdk/kernel/linux# cp ../linode-config .config
+root:/sdk/kernel/linux# cp ../xen-config .config
 root:/sdk/kernel/linux# make oldconfig
   HOSTCC  scripts/basic/fixdep
   HOSTCC  scripts/kconfig/conf.o
@@ -416,7 +416,7 @@ approach though is to do the following:
  5. ssh into the Linode
  6. On the Linode : mkdir -p /boot/grub
  7. On the Linode : create /boot/grub/menu.lst
- 8. scp /sdk/kernel/linux/arch/x86/boot/bzImage to the Linode-IP:/boot/OpenKaOS-4.0.0-1.boot
+ 8. scp /sdk/kernel/linux/arch/x86/boot/bzImage to the Linode-IP:/boot/OpenKaOS-4.0.1-1.boot
  9. In the Linode manager click on the Linode, edit the profile
  0. Change the kernel to pv-grub-x86_64 and reboot
 
@@ -435,7 +435,7 @@ timeout 3
 
 title OpenKaOS
 root (hd0)
-kernel /boot/OpenKaOS-4.0.0-1.boot xencons=tty console=tty1 console=hvc0 earlyprintk=xen
+kernel /boot/OpenKaOS-4.0.1-1.boot xencons=tty console=tty1 console=hvc0 earlyprintk=xen
 
 [root@test ~]#
 ```
@@ -502,7 +502,7 @@ The key's randomart image is:
 |      ..=B+o     |
 +----[SHA256]-----+
 
-OpenKaOS version 4.0.0
+OpenKaOS version 4.0.1
 Copyright (c) 2009-2015 Opaque Systems LLC
 
 http://www.opaquesystems.com
@@ -570,13 +570,13 @@ Are you sure you want to continue connecting (yes/no)? yes
 Warning: Permanently added '[192.168.166.125]:2222' (ED25519) to the list of known hosts.
 root@192.168.166.125's password: 
 
-OpenKaOS version 4.0.0
+OpenKaOS version 4.0.1
 Copyright (c) 2009-2015 Opaque Systems LLC
 
 http://www.opaquesystems.com
 
 ~ # uname -a
-Linux openkaos 4.0.5-OpenKaOS-4.0.0 #2 SMP Tue Jun 9 05:29:33 UTC 2015 x86_64 GNU/Linux
+Linux openkaos 4.0.5-OpenKaOS-4.0.1 #2 SMP Tue Jun 9 05:29:33 UTC 2015 x86_64 GNU/Linux
 ~ # uptime
  05:36:50 up 5 min,  0 users,  load average: 0.00, 0.00, 0.00
 ~ # 

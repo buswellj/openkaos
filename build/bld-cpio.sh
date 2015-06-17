@@ -182,14 +182,14 @@ cat > $OKBFS/init << EOF
 /sbin/sshd -E /tmp/sshd.log
 
 /sbin/busybox echo ""
-/sbin/busybox echo "OpenKaOS version 4.0.0"
+/sbin/busybox echo "OpenKaOS version 4.0.1"
 /sbin/busybox echo "Copyright (c) 2009-2015 Opaque Systems LLC"
 /sbin/busybox echo ""
 /sbin/busybox echo "http://www.opaquesystems.com"
 /sbin/busybox echo ""
 
 /sbin/busybox echo "" > /etc/motd
-/sbin/busybox echo "OpenKaOS version 4.0.0" >> /etc/motd
+/sbin/busybox echo "OpenKaOS version 4.0.1" >> /etc/motd
 /sbin/busybox echo "Copyright (c) 2009-2015 Opaque Systems LLC" >> /etc/motd
 /sbin/busybox echo "" >> /etc/motd
 /sbin/busybox echo "http://www.opaquesystems.com" >> /etc/motd
@@ -210,8 +210,8 @@ EOF
 chmod 755 $OKBFS/init
 
 cd $OKBFS
-rm -rf $SDK/openkaos.boot/OpenKaOS_boot-4.0.0.cpio
-find . | cpio --quiet -H newc -o > $SDK/openkaos.boot/OpenKaOS_boot-4.0.0.cpio
+rm -rf $SDK/openkaos.boot/OpenKaOS_boot-4.0.1.cpio
+find . | cpio --quiet -H newc -o > $SDK/openkaos.boot/OpenKaOS_boot-4.0.1.cpio
 
 cat > $SDK/tools/regen-initramfs << EOF
 #!/bin/bash
@@ -220,9 +220,9 @@ SDKNOW=\`date +%s\`
 SDKPWD=\`pwd\`
 export SDKNOW SDKPWD
 
-mv /sdk/openkaos.boot/OpenKaOS_boot-4.0.0.cpio /sdk/openkaos.boot/OpenKaOS_boot-4.0.0.cpio-\$SDKNOW
+mv /sdk/openkaos.boot/OpenKaOS_boot-4.0.1.cpio /sdk/openkaos.boot/OpenKaOS_boot-4.0.1.cpio-\$SDKNOW
 cd /sdk/openkaos.fs/base/
-find . | cpio --quiet -H newc -o > /sdk/openkaos.boot/OpenKaOS_boot-4.0.0.cpio
+find . | cpio --quiet -H newc -o > /sdk/openkaos.boot/OpenKaOS_boot-4.0.1.cpio
 cd \$SDKPWD
 
 EOF
