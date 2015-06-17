@@ -324,15 +324,17 @@ Here is a quick explanation of these directories and files:
  /sdk/tools/ | Contains useful tools
  bld-cpio.sh | Script that is used to regenerate the entire example cpio
  regen-initramfs | If you make changes to the initramfs this will regenerate the cpio
- linode-config | This is an example Linode / Xen Guest Kernel Configuration
+ config-linode | This is the latest example Linode kernel config
+ kvm-xen-linode | This is a Linode example kernel config that supports both Xen and KVM
+ xen-linode | This is the original Linode example for Xen only
  
-You can use the linode-config as the base .config file for the kernel or you can build
-your own. We recommend starting with the linode-config and making changes. Additional
+You can use the config-linode or any of the *-linode configs as the base .config file for the kernel or you can build
+your own. We recommend starting with the config-linode and making changes. Additional
 examples for other cloud services and platforms will be added in the near future. 
 
 ```
  root:/# cd /sdk/kernel/linux
- root:/sdk/kernel/linux# cp ../linode-config .config
+ root:/sdk/kernel/linux# cp ../config-linode .config
  root:/sdk/kernel/linux# make oldconfig
  root:/sdk/kernel/linux# TERM=linux make menuconfig
  root:/sdk/kernel/linux# make
