@@ -33,7 +33,7 @@ sudo cp -a $PBSRC/* $LFS/src
 sudo cp -a bld-sdk*.sh $LFS/src
 sudo cp -a bld-core.sh $LFS/src
 sudo cp -a bld-cpio.sh $LFS/src
-sudo cp -a kernel-configs/*-config $LFS/src
+sudo cp -a kernel-configs/*-linode $LFS/src
 sudo mv $LFS/src/bld-sdk.sh $LFS/src/bld-sdk1.sh
 sudo su - -c "echo "#!$TOOLS/bin/bash" > $LFS/src/bld-sdk.sh"
 sudo su - -c "cat $LFS/src/bld-sdk1.sh >> $LFS/src/bld-sdk.sh"
