@@ -48,7 +48,7 @@ make install 1>>$LOGS/expat.log 2>>$LOGS/expat.err
 
 echo "  [.] inetutils"
 cd $SRC/inetutils
-echo '#define PATH_PROCNET_DEV "/proc/net/dev"' >> ifconfig/system/linux.h
+#echo '#define PATH_PROCNET_DEV "/proc/net/dev"' >> ifconfig/system/linux.h
 ./configure --prefix=/usr --libexecdir=/usr/sbin \
     --localstatedir=/var \
     --disable-logger --disable-whois \
