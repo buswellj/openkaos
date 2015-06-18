@@ -232,12 +232,12 @@ sudo rm $LFS/usr/lib/lib{com_err,e2p,ext2fs,ss}.a
 sudo rm $LFS/usr/lib/libltdl.a
 sudo rm $LFS/usr/lib/libz.a
 
-echo "" > $LFS/etc/OpenKaOS-release
-echo "OpenKaOS SDK Environment" >> $LFS/etc/OpenKaOS-release
-echo "version 4.0.1" >> $LFS/etc/OpenKaOS-release
-echo "" >> $LFS/etc/OpenKaOS-release
-echo "Copyright (c) 2009-2015 Opaque Systems, LLC" >> $LFS/etc/OpenKaOS-release
-echo "" >> $LFS/etc/OpenKaOS-release
+sudo echo "" > $LFS/etc/OpenKaOS-release
+sudo echo "OpenKaOS SDK Environment" >> $LFS/etc/OpenKaOS-release
+sudo echo "version 4.0.1" >> $LFS/etc/OpenKaOS-release
+sudo echo "" >> $LFS/etc/OpenKaOS-release
+sudo echo "Copyright (c) 2009-2015 Opaque Systems, LLC" >> $LFS/etc/OpenKaOS-release
+sudo echo "" >> $LFS/etc/OpenKaOS-release
 
 echo "Build complete: " >> $PBSTATS
 date >> $PBSTATS
