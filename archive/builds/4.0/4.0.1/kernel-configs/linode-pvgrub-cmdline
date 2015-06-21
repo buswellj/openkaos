@@ -1,0 +1,1 @@
+xencons=tty console=tty1 console=hvc0 earlyprintk=xen
