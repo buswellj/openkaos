@@ -256,6 +256,11 @@ if [ -e intltool ]; then
 else
  echo "  [.] intltool missing "
 fi
+if [ -e iojs ]; then
+ echo "  [.] iojs ok "
+else
+ echo "  [.] iojs missing "
+fi
 if [ -e iproute2 ]; then
  echo "  [.] iproute2 ok "
 else
@@ -411,6 +416,11 @@ if [ -e procps ]; then
 else
  echo "  [.] procps missing "
 fi
+if [ -e python ]; then
+ echo "  [.] python ok "
+else
+ echo "  [.] python missing "
+fi
 if [ -e readline ]; then
  echo "  [.] readline ok "
 else
@@ -425,6 +435,11 @@ if [ -e shadow ]; then
  echo "  [.] shadow ok "
 else
  echo "  [.] shadow missing "
+fi
+if [ -e sqlite ]; then
+ echo "  [.] sqlite ok "
+else
+ echo "  [.] sqlite missing "
 fi
 if [ -e squashfs ]; then
  echo "  [.] squashfs ok "

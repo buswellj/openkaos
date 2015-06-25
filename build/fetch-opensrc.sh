@@ -111,6 +111,7 @@ mv grub-* grub
 mv gzip-* gzip
 mv haveged-* haveged
 mv iana-etc-* iana-etc
+mv iojs-* iojs
 mv inetutils-* inetutils
 mv intltool-* intltool
 mv iproute2-* iproute2
@@ -145,9 +146,11 @@ mv perl-* perl
 mv pkg-config-* pkg-config
 mv psmisc-* psmisc
 mv procps-* procps
+my Python-* python
 mv readline-* readline
 mv sed-* sed
 mv shadow-* shadow
+mv sqlite-* sqlite
 mv squashfs* squashfs
 mv sysklogd-* sysklogd
 mv syslinux* syslinux

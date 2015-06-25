@@ -58,12 +58,10 @@ cd $SRC/openssl
 mkdir -p $APPCONFIG/openssl
 mkdir -p $APPQ/openssl/1.0.2
 patch -Np1 -i ../patches/openssl-1.0.2a-fix_parallel_build-2.patch 1>>$LOGS/openssl.log 2>>$LOGS/openssl.err
-./config --prefix=$APPQ/openssl/1.0.2/ --openssldir=$APPCONFIG/openssl/ zlib-dynamic shared 1>>$LOGS/openssl.log 2>>$LOGS/openssl.err
+./config --prefix=/usr zlib-dynamic shared 1>>$LOGS/openssl.log 2>>$LOGS/openssl.err
 make 1>>$LOGS/openssl.log 2>>$LOGS/openssl.err
 make test 1>>$LOGS/openssl.log 2>>$LOGS/openssl.err
 make install 1>>$LOGS/openssl.log 2>>$LOGS/openssl.err
-ln -sf $APPQ/openssl/1.0.2 $APPQUEUE/openssl
-echo $APPQUEUE/openssl/lib > /etc/ld.so.conf.d/openssl.conf
 ldconfig
 
 cd $SRC/tools
@@ -73,6 +71,17 @@ cp -a make-ca.sh /usr/bin
 chmod +x /usr/bin/make-ca.sh
 cp -a remove-expired-certs.sh /usr/sbin
 chmod +x /usr/sbin/remove-expired-certs.sh
+cp $SRC/patches/certdata.txt .
+
+/usr/bin/make-ca.sh
+SSLDIR=/etc/ssl                                              &&
+remove-expired-certs.sh certs                                &&
+install -d ${SSLDIR}/certs                                   &&
+cp -v certs/*.pem ${SSLDIR}/certs                            &&
+c_rehash                                                     &&
+install BLFS-ca-bundle*.crt ${SSLDIR}/ca-bundle.crt          &&
+ln -sfv ../ca-bundle.crt ${SSLDIR}/certs/ca-certificates.crt &&
+unset SSLDIR
 
 cd $SRC/linux-pam
 ./configure --prefix=/usr --sysconfdir=/etc --libdir=/usr/lib --enable-securedir=/lib/security 1>>$LOGS/linux-pam.log 2>>$LOGS/linux-pam.err
@@ -84,25 +93,24 @@ install -v -m700 -d /var/lib/sshd
 chown   -v root:sys /var/lib/sshd
 groupadd -g 50 sshd
 useradd -c 'sshd PrivSep' -d /var/lib/sshd -g sshd -s /bin/false -u 50 sshd
-CFLAGS="$CFLAGS -I$APPQUEUE/openssl/include -L$APPQUEUE/lib" ./configure --prefix=/usr --sysconfdir=/etc/ssh --with-md5-passwords \
- --with-privsep-path=/var/lib/sshd --with-pam --with-ipaddr-display --with-4in6 --with-ldflags=-L$APPQUEUE/openssl/lib 1>>$LOGS/openssh.log 2>>$LOGS/openssh.err
+./configure --prefix=/usr --sysconfdir=/etc/ssh --with-md5-passwords \
+ --with-privsep-path=/var/lib/sshd --with-pam --with-ipaddr-display --with-4in6 1>>$LOGS/openssh.log 2>>$LOGS/openssh.err
 make 1>>$LOGS/openssh.log 2>>$LOGS/openssh.err
 make install 1>>$LOGS/openssh.log 2>>$LOGS/openssh.err
 
 cd $SRC/curl
-CFLAGS="$CFLAGS -I$APPQUEUE/openssl/include -L$APPQUEUE/openssl/lib" LDFLAGS="-L$APPQUEUE/openssl/lib" ./configure --prefix=/usr --disable-static \
+./configure --prefix=/usr --disable-static \
  --enable-threaded-resolver --with-ssl 1>>$LOGS/curl.log 2>>$LOGS/curl.err
 make 1>>$LOGS/curl.log 2>>$LOGS/curl.err
 make install 1>>$LOGS/curl.log 2>>$LOGS/curl.err
 
 cd $SRC/git
-CFLAGS="$CFLAGS -I$APPQUEUE/openssl/include -L$APPQUEUE/openssl/lib" ./configure --prefix=/usr --with-openssl=$APPQUEUE/openssl --with-curl 1>>$LOGS/git.log 2>>$LOGS/git.err
+./configure --prefix=/usr --with-openssl=$APPQUEUE/openssl --with-curl 1>>$LOGS/git.log 2>>$LOGS/git.err
 make 1>>$LOGS/git.log 2>>$LOGS/git.err
 make install 1>>$LOGS/git.log 2>>$LOGS/git.err
 
 cd $SRC/dhcp
-./configure --prefix=/usr --sysconfdir=$APPCONFIG/dhcp --localstatedir=$APPSTATE/dhcp \
- --with-cli-lease-file=$APPSTATE/dhcp/dhclient.leases --with-cli6-lease-file=$APPSTATE/dhcp/dhclient6.leases 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
+./configure --prefix=/usr 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
 make 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
 make install 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
 cat client/scripts/linux | sed 's/bash/ash/g' > /usr/sbin/dhclient-script
@@ -135,6 +143,21 @@ cd $SRC/haveged
 ./configure --prefix=/usr --with-gnu-ld --with-pic --enable-shared --disable-static 1>>$LOGS/haveged.log 2>>$LOGS/haveged.err
 make 1>>$LOGS/haveged.log 2>>$LOGS/haveged.err
 make install 1>>$LOGS/haveged.log 2>>$LOGS/haveged.err
+
+cd $SRC/sqlite
+./configure --prefix=/usr 1>>$LOGS/sqlite.log 2>>$LOGS/sqlite.err
+make 1>>$LOGS/sqlite.log 2>>$LOGS/sqlite.err
+make install 1>>$LOGS/sqlite.log 2>>$LOGS/sqlite.err
+
+cd $SRC/python
+./configure --prefix=/usr --enable-shared --with-system-expat --with-system-ffi --enable-unicode=ucs4 1>>$LOGS/python.log 2>>$LOGS/python.err
+make 1>>$LOGS/python.log 2>>$LOGS/python.err
+make install 1>>$LOGS/python.log 2>>$LOGS/python.err
+
+cd $SRC/iojs
+./configure --prefix=/usr 1>>$LOGS/iojs.log 2>>$LOGS/iojs.err
+make 1>>$LOGS/iojs.log 2>>$LOGS/iojs.err
+make install 1>>$LOGS/iojs.log 2>>$LOGS/iojs.err
 
 ln -sf /sbin/busybox /usr/bin/vi
 
