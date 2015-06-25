@@ -73,7 +73,7 @@ sh Configure -des -Dprefix=/usr \
                   -Duseshrplib 1>>$LOGS/perl.log 2>>$LOGS/perl.err
 
 make 1>>$LOGS/perl.log 2>>$LOGS/perl.err
-make -k test 1>>$LOGS/perl.log 2>>$LOGS/perl.err
+#make -k test 1>>$LOGS/perl.log 2>>$LOGS/perl.err
 make install 1>>$LOGS/perl.log 2>>$LOGS/perl.err
 unset BUILD_ZLIB BUILD_BZIP2
 
