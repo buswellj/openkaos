@@ -10,7 +10,7 @@
 #
 
 echo "  [.] Creating Virtual File Systems"
-sudo mkdir -pv $LFS/{dev,proc,sys,run}
+sudo mkdir -pv $LFS/{dev,proc,sys,run,cgroup}
 sudo mknod -m 600 $LFS/dev/console c 5 1
 sudo mknod -m 666 $LFS/dev/null c 1 3
 sudo mount -v --bind /dev $LFS/dev

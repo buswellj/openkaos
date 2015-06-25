@@ -194,13 +194,13 @@ ldconfig
 
 echo "  [.] kmod"
 cd $SRC/kmod
-./configure --prefix=/usr       \
+liblzma_LIBS="-L/lib -llzma" liblzma_CFLAGS="-I/usr/include" ./configure --prefix=/usr       \
             --bindir=/bin       \
             --libdir=/lib       \
             --sysconfdir=/etc   \
             --disable-manpages  \
             --with-xz           \
-            --with-zlib 1>>$LOGS/kmod.log 2>>$LOGS/kmod.err
+            --with-zlib --with-gnu-ld --with-pic 1>>$LOGS/kmod.log 2>>$LOGS/kmod.err
 make 1>>$LOGS/kmod.log 2>>$LOGS/kmod.err
 make install 1>>$LOGS/kmod.log 2>>$LOGS/kmod.err
 for target in depmod insmod modinfo modprobe rmmod; do
