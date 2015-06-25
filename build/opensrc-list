@@ -11,7 +11,7 @@ http://sourceforge.net/projects/check/files/check/0.9.14/check-0.9.14.tar.gz
 http://ftp.gnu.org/gnu/coreutils/coreutils-8.23.tar.xz
 http://ftp.gnu.org/gnu/dejagnu/dejagnu-1.5.3.tar.gz
 http://ftp.gnu.org/gnu/diffutils/diffutils-3.3.tar.xz
-http://dev.gentoo.org/~blueness/eudev/eudev-3.1.1.tar.gz
+http://dev.gentoo.org/~blueness/eudev/eudev-3.1.2.tar.gz
 http://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v1.42.13/e2fsprogs-1.42.13.tar.gz
 http://prdownloads.sourceforge.net/expat/expat-2.1.0.tar.gz
 http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz
@@ -40,13 +40,13 @@ http://www.linuxfromscratch.org/lfs/downloads/development/lfs-bootscripts-201502
 https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.24.tar.xz
 http://download.savannah.gnu.org/releases/libpipeline/libpipeline-1.4.0.tar.gz
 http://ftp.gnu.org/gnu/libtool/libtool-2.4.6.tar.xz
-https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.0.5.tar.xz
+https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.1.tar.xz
 http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.xz
 http://ftp.gnu.org/gnu/make/make-4.1.tar.bz2
 http://download.savannah.gnu.org/releases/man-db/man-db-2.7.1.tar.xz
 https://www.kernel.org/pub/linux/docs/man-pages/man-pages-4.00.tar.xz
 http://www.multiprecision.org/mpc/download/mpc-1.0.3.tar.gz
-http://www.mpfr.org/mpfr-3.1.2/mpfr-3.1.2.tar.xz
+http://www.mpfr.org/mpfr-3.1.3/mpfr-3.1.3.tar.xz
 http://ftp.gnu.org/gnu//ncurses/ncurses-5.9.tar.gz
 http://ftp.gnu.org/gnu/patch/patch-2.7.5.tar.xz
 http://www.cpan.org/src/5.0/perl-5.22.0.tar.bz2
@@ -76,7 +76,6 @@ https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/05/gcc-5.1.0-upstream_fixes-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/glibc-2.21-fhs-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/kbd-2.0.2-backspace-1.patch
-https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/mpfr-3.1.2-upstream_fixes-3.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/05/ncurses-5.9-gcc5_buildfixes-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/05/perl-5.20.2-gcc5_fixes-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/02/readline-6.3-upstream_fixes-3.patch
@@ -93,7 +92,6 @@ http://www.linux-pam.org/library/Linux-PAM-1.2.0.tar.bz2
 http://www.busybox.net/downloads/busybox-1.23.2.tar.bz2
 https://www.kernel.org/pub/software/scm/git/git-2.4.2.tar.xz
 http://ftp.gnu.org/gnu/cpio/cpio-2.11.tar.bz2
-http://roy.marples.name/downloads/dhcpcd/dhcpcd-6.9.0.tar.bz2
 http://www.netfilter.org/projects/iptables/files/iptables-1.4.21.tar.bz2
 http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 http://sourceforge.net/projects/bridge/files/bridge/bridge-utils-1.5.tar.gz
@@ -106,3 +104,7 @@ http://www.issihosts.com/haveged/haveged-1.9.1.tar.gz
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/bridge-utils-1.5-linux_3.8_fix-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/cpio-2.11-remove_gets.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/openssl-1.0.2a-fix_parallel_build-2.patch
+https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/certdata.txt
+https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/make-ca.sh
+https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/make-cert.pl
+https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/remove-expired-certs.sh

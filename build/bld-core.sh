@@ -66,6 +66,14 @@ ln -sf $APPQ/openssl/1.0.2 $APPQUEUE/openssl
 echo $APPQUEUE/openssl/lib > /etc/ld.so.conf.d/openssl.conf
 ldconfig
 
+cd $SRC/tools
+cp -a make-cert.pl /usr/bin
+chmod +x /usr/bin/make-cert.pl
+cp -a make-ca.sh /usr/bin
+chmod +x /usr/bin/make-ca.sh
+cp -a remove-expired-certs.sh /usr/sbin
+chmod +x /usr/sbin/remove-expired-certs.sh
+
 cd $SRC/linux-pam
 ./configure --prefix=/usr --sysconfdir=/etc --libdir=/usr/lib --enable-securedir=/lib/security 1>>$LOGS/linux-pam.log 2>>$LOGS/linux-pam.err
 make 1>>$LOGS/linux-pam.log 2>>$LOGS/linux-pam.err
@@ -98,14 +106,6 @@ cd $SRC/dhcp
 make 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
 make install 1>>$LOGS/dhcp.log 2>>$LOGS/dhcp.err
 cat client/scripts/linux | sed 's/bash/ash/g' > /usr/sbin/dhclient-script
-
-cd $SRC/dhcpcd
-./configure --prefix=$APPQ/dhcpcd/6.9.0 --sysconfdir=$APPCONFIG/dhcpcd 1>>$LOGS/dhcpcd.log 2>>$LOGS/dhcpcd.err
-make 1>>$LOGS/dhcpcd.log 2>>$LOGS/dhcpcd.err
-make install 1>>$LOGS/dhcpcd.log 2>>$LOGS/dhcpcd.err
-ln -sf $APPQ/dhcpcd/6.9.0 $APPQUEUE/dhcpcd 1>>$LOGS/dhcpcd.log 2>>$LOGS/dhcpcd.err
-echo $APPQUEUE/dhcpcd/lib > /etc/ld.so.conf.d/dhcpcd.conf 1>>$LOGS/dhcpcd.log 2>>$LOGS/dhcpcd.err
-ldconfig 1>>$LOGS/dhcpcd.log 2>>$LOGS/dhcpcd.err
 
 cd $SRC/squashfs/squashfs-tools
 mv Makefile Makefile.orig 1>>$LOGS/sqfs.log 2>>$LOGS/sqfs.err

@@ -116,11 +116,6 @@ if [ -e dhcp ]; then
 else
  echo "  [.] dhcp missing "
 fi
-if [ -e dhcpcd ]; then
- echo "  [.] dhcpcd ok "
-else
- echo "  [.] dhcpcd missing "
-fi
 if [ -e diffutils ]; then
  echo "  [.] diffutils ok "
 else

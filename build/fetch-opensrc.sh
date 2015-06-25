@@ -34,6 +34,9 @@ cd pkg/$PBTAG
 mkdir -p patches
 chmod a+wt patches
 mv *.patch patches
+mkdir -p tools
+chmod a+wt tools
+mv make-ca.sh make-cert.pl remove-expired-certs.sh tools
 mkdir -p log
 chmod a+wt log
 
@@ -82,7 +85,6 @@ mv cracklib-* cracklib
 mv curl-* curl
 mv dejagnu-* dejagnu
 mv dhcp-* dhcp
-mv dhcpcd-* dhcpcd
 mv diffutils-* diffutils
 mv e2fsprogs-* e2fsprogs
 mv eudev-* eudev

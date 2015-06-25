@@ -269,7 +269,6 @@ make install 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 
 echo "  [.] mpfr"
 cd $SRC/mpfr
-patch -Np1 -i ../patches/mpfr-3.1.2-upstream_fixes-3.patch 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 ./configure --prefix=/usr --disable-static --enable-thread-safe --docdir=/usr/share/doc/mpfr 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make check 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err

@@ -190,6 +190,8 @@ PKG_CONFIG_PATH=$TOOLS/lib/pkgconfig ./configure --prefix=/usr --disable-vlock 1
 make 1>>$LOGS/kbd.log 2>>$LOGS/kbd.err
 make install 1>>$LOGS/kbd.log 2>>$LOGS/kbd.err
 
+ldconfig
+
 echo "  [.] kmod"
 cd $SRC/kmod
 ./configure --prefix=/usr       \
