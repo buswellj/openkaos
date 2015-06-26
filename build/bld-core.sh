@@ -35,6 +35,9 @@ chown 0:0 -R $APPQ
 cp -a $SRC/bld-cpio.sh $SDK/tools
 cp -a $SRC/*-linode $SDK/kernel
 cp -a $SRC/linux $SDK/kernel
+mkdir -p $APPCONFIG
+mkdir -p $APPQ
+mkdir -p $APPSTATE
 
 cd $SRC/cpio
 patch -Np1 -i ../patches/cpio-2.11-remove_gets.patch 1>>$LOGS/cpio.log 2>>$LOGS/cpio.err
@@ -55,8 +58,6 @@ make 1>>$LOGS/bridge-utils.log 2>>$LOGS/bridge-utils.err
 make install 1>>$LOGS/bridge-utils.log 2>>$LOGS/bridge-utils.err
 
 cd $SRC/openssl
-mkdir -p $APPCONFIG/openssl
-mkdir -p $APPQ/openssl/1.0.2
 patch -Np1 -i ../patches/openssl-1.0.2a-fix_parallel_build-2.patch 1>>$LOGS/openssl.log 2>>$LOGS/openssl.err
 ./config --prefix=/usr zlib-dynamic shared 1>>$LOGS/openssl.log 2>>$LOGS/openssl.err
 make 1>>$LOGS/openssl.log 2>>$LOGS/openssl.err
