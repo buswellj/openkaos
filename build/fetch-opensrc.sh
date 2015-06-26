@@ -34,6 +34,7 @@ cd pkg/$PBTAG
 mkdir -p patches
 chmod a+wt patches
 mv *.patch patches
+mv certdata.txt patches
 mkdir -p tools
 chmod a+wt tools
 mv make-ca.sh make-cert.pl remove-expired-certs.sh tools
