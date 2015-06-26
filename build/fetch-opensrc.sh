@@ -146,7 +146,7 @@ mv perl-* perl
 mv pkg-config-* pkg-config
 mv psmisc-* psmisc
 mv procps-* procps
-my Python-* python
+mv Python-* python
 mv readline-* readline
 mv sed-* sed
 mv shadow-* shadow
