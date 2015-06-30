@@ -72,6 +72,10 @@ cp -a /sbin/ip $OKBFS/sbin/
 cp -a /bin/echo $OKBFS/bin/
 cp -a /sbin/brctl $OKBFS/sbin/
 cp -a /sbin/bridge $OKBFS/sbin/
+cp -a /usr/sbin/kexec $OKBFS/sbin/
+cp -a /usr/bin/node $OKBFS/bin
+cp -a /usr/bin/iojs $OKBFS/bin
+cp -a /usr/bin/npm $OKBFS/bin
 
 cp -a /lib/ld-* $OKBFS/lib/
 cp -a /lib/libc-* $OKBFS/lib/
@@ -107,6 +111,10 @@ cp -a /usr/lib/libip6tc.so* $OKBFS/lib/
 cp -a /usr/lib/libxtables.so* $OKBFS/lib/
 cp -a /lib/xtables/ $OKBFS/lib/
 cp -a /usr/lib/libhavege.so* $OKBFS/lib/
+cp -a /usr/lib/libstdc++.* $OKBFS/lib/
+cp -a /usr/lib/libgcc_s.so* $OKBFS/lib/
+cp -a /lib/liblzma.so* $OKBFS/lib/
+cp -a /usr/lib/node_modules/ $OKBFS/lib/
 
 cp -a /etc/{passwd,shadow,group,mtab,ld.so.conf,ld.so.cache,nsswitch.conf,resolv.conf} $OKBFS/app/config
 cp -a /etc/login.* $OKBFS/app/config
