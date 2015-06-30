@@ -271,6 +271,11 @@ if [ -e kbd ]; then
 else
  echo "  [.] kbd missing "
 fi
+if [ -e kexec-tools ]; then
+ echo "  [.] kexec-tools ok "
+else
+ echo "  [.] kexec-tools missing "
+fi
 if [ -e kmod ]; then
  echo "  [.] kmod ok "
 else

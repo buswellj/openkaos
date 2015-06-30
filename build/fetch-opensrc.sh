@@ -118,6 +118,7 @@ mv intltool-* intltool
 mv iproute2-* iproute2
 mv iptables-* iptables
 mv kbd-* kbd
+mv kexec-tools-* kexec-tools
 mv kmod* kmod
 mv less-* less
 mv libcap-* libcap

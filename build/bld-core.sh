@@ -160,6 +160,11 @@ cd $SRC/iojs
 make 1>>$LOGS/iojs.log 2>>$LOGS/iojs.err
 make install 1>>$LOGS/iojs.log 2>>$LOGS/iojs.err
 
+cd $SRC/kexec-tools
+./configure --prefix=/usr 1>>$LOGS/kexec-tools.log 2>>$LOGS/kexec-tools.err
+make 1>>$LOGS/kexec-tools.log 2>>$LOGS/kexec-tools.err
+make install 1>>$LOGS/kexec-tools.log 2>>$LOGS/kexec-tools.err
+
 ln -sf /sbin/busybox /usr/bin/vi
 
 cd $SRC
