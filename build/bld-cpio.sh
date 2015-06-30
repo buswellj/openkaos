@@ -28,7 +28,7 @@ mkdir -p $SDK/openkaos.boot
 OKBFS=$SDK/openkaos.fs/base
 export OKBFS
 
-mkdir -p $OKBFS/{dev,bin,sbin,usr,lib}
+mkdir -p $OKBFS/{dev,bin,sbin,usr,lib,var}
 mkdir -p $OKBFS/app
 mkdir -p $OKBFS/app/config
 mkdir -p $OKBFS/app/status
@@ -53,12 +53,12 @@ mknod $OKBFS/dev/hvc7 c 229 7
 mknod $OKBFS/dev/rtc c 10 135
 mknod $OKBFS/dev/rtc0 c 254 0
 
-
 cp -a /sbin/busybox $OKBFS/sbin/
-cp -a /app/queue/openssl/lib/libcrypto.so* $OKBFS/lib/
-cp -a /app/queue/openssl/lib/libssl.so* $OKBFS/lib/
+cp -a /usr/lib/libcrypto.so* $OKBFS/lib/
+cp -a /usr/lib/libssl.so* $OKBFS/lib/
 cp -a /usr/sbin/sshd $OKBFS/sbin/
 cp -a /usr/bin/ssh $OKBFS/bin/
+cp -a /usr/bin/scp $OKBFS/bin/
 cp -a /usr/bin/ssh-keygen $OKBFS/bin/
 cp -a /usr/bin/curl $OKBFS/bin/
 cp -a /usr/sbin/dhclient $OKBFS/sbin/
@@ -67,6 +67,9 @@ cp -a /bin/login $OKBFS/bin/
 cp -a /sbin/iptables $OKBFS/sbin/
 cp -a /sbin/xtables-multi $OKBFS/sbin/
 cp -a /usr/sbin/haveged $OKBFS/sbin/
+cp -a /sbin/agetty $OKBFS/sbin/
+cp -a /sbin/ip $OKBFS/sbin/
+cp -a /bin/echo $OKBFS/bin/
 
 cp -a /lib/ld-* $OKBFS/lib/
 cp -a /lib/libc-* $OKBFS/lib/
@@ -80,6 +83,8 @@ cp -a /lib/libcrypt-* $OKBFS/lib/
 cp -a /lib/libcrypt.* $OKBFS/lib/
 cp -a /lib/libdl-* $OKBFS/lib/
 cp -a /lib/libdl.* $OKBFS/lib/
+cp -a /lib/librt-* $OKBFS/lib/
+cp -a /lib/librt.* $OKBFS/lib/
 cp -a /lib/libnsl-* $OKBFS/lib/
 cp -a /lib/libnsl.* $OKBFS/lib/
 cp -a /lib/libnss_* $OKBFS/lib/
@@ -102,11 +107,11 @@ cp -a /lib/xtables/ $OKBFS/lib/
 cp -a /usr/lib/libhavege.so* $OKBFS/lib/
 
 cp -a /etc/{passwd,shadow,group,mtab,ld.so.conf,ld.so.cache,nsswitch.conf,resolv.conf} $OKBFS/app/config
+cp -a /etc/login.* $OKBFS/app/config
 cp -a /usr/share/zoneinfo/UTC $OKBFS/app/config/localtime
 
 ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/ash
 ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/sh
-ln -sfr $OKBFS/sbin/busybox $OKBFS/sbin/ip
 
 mv $OKBFS/app/config/passwd $OKBFS/app/config/passwd.orig
 cat $OKBFS/app/config/passwd.orig | sed 's/bash/ash/g' > $OKBFS/app/config/passwd
@@ -228,5 +233,4 @@ cd \$SDKPWD
 EOF
 
 chmod 755 $SDK/tools/regen-initramfs
-
 
