@@ -70,6 +70,8 @@ cp -a /usr/sbin/haveged $OKBFS/sbin/
 cp -a /sbin/agetty $OKBFS/sbin/
 cp -a /sbin/ip $OKBFS/sbin/
 cp -a /bin/echo $OKBFS/bin/
+cp -a /sbin/brctl $OKBFS/sbin/
+cp -a /sbin/bridge $OKBFS/sbin/
 
 cp -a /lib/ld-* $OKBFS/lib/
 cp -a /lib/libc-* $OKBFS/lib/
