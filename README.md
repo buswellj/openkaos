@@ -40,7 +40,13 @@ prefer a pre-compiled version of the SDK you can find it here:
 
  * [Release Notes](https://github.com/opaquesystems/openkaos/releases/tag/4.0.0)
  * [SDK-4.0.0.tar.xz](https://github.com/opaquesystems/openkaos/releases/download/4.0.0/sdk-1433823730.tar.xz)
- 
+
+###Development Release
+====================================================================================
+
+The development release of OpenKaOS is 5.0.0, it is scheduled for GA by March 31st
+2016. Aside from updating packages to the latest releases, 5.0 adds additional
+scripts and support for Docker. 
 
 
 ###Security Issues
