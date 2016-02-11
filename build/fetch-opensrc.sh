@@ -139,7 +139,7 @@ cp -a mpfr gcc/mpfr
 cp -a mpfr gcc2/mpfr
 mv ncurses-* ncurses
 mv nano-* nano
-mv nodejs-* nodejs
+mv node-* node
 mv openssh-* openssh
 mv openssl-* openssl
 mv parted-* parted

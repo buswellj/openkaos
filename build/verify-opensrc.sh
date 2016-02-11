@@ -371,10 +371,10 @@ if [ -e nano ]; then
 else
  echo "  [.] nano missing "
 fi
-if [ -e nodejs ]; then
- echo "  [.] nodejs ok "
+if [ -e node ]; then
+ echo "  [.] node ok "
 else
- echo "  [.] nodejs missing "
+ echo "  [.] node missing "
 fi
 if [ -e openssh ]; then
  echo "  [.] openssh ok "
