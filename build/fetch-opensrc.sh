@@ -112,7 +112,6 @@ mv grub-* grub
 mv gzip-* gzip
 mv haveged-* haveged
 mv iana-etc-* iana-etc
-mv iojs-* iojs
 mv inetutils-* inetutils
 mv intltool-* intltool
 mv iproute2-* iproute2
@@ -139,6 +138,7 @@ cp -a mpfr gcc/mpfr
 cp -a mpfr gcc2/mpfr
 mv ncurses-* ncurses
 mv nano-* nano
+mv nodejs-* nodejs
 mv openssh-* openssh
 mv openssl-* openssl
 mv parted-* parted

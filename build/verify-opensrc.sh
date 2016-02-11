@@ -256,11 +256,6 @@ if [ -e intltool ]; then
 else
  echo "  [.] intltool missing "
 fi
-if [ -e iojs ]; then
- echo "  [.] iojs ok "
-else
- echo "  [.] iojs missing "
-fi
 if [ -e iproute2 ]; then
  echo "  [.] iproute2 ok "
 else
@@ -375,6 +370,11 @@ if [ -e nano ]; then
  echo "  [.] nano ok "
 else
  echo "  [.] nano missing "
+fi
+if [ -e nodejs ]; then
+ echo "  [.] nodejs ok "
+else
+ echo "  [.] nodejs missing "
 fi
 if [ -e openssh ]; then
  echo "  [.] openssh ok "

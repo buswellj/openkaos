@@ -381,7 +381,7 @@ make 1>>$LOGS/cracklib.log 2>>$LOGS/cracklib.err
 make install 1>>$LOGS/cracklib.log 2>>$LOGS/cracklib.err
 mv -v /usr/lib/libcrack.so.2* /lib 1>>$LOGS/cracklib.log 2>>$LOGS/cracklib.err
 ln -v -sf ../../lib/libcrack.so.2.9.1 /usr/lib/libcrack.so 1>>$LOGS/cracklib.log 2>>$LOGS/cracklib.err
-install -v -m644 -D ./cracklib-words-20080507.gz \
+install -v -m644 -D ./cracklib-words-2.9.6.gz \
     /usr/share/dict/cracklib-words.gz 1>>$LOGS/cracklib.log 2>>$LOGS/cracklib.err
 gunzip -v /usr/share/dict/cracklib-words.gz 1>>$LOGS/cracklib.log 2>>$LOGS/cracklib.err
 ln -v -s cracklib-words /usr/share/dict/words 1>>$LOGS/cracklib.log 2>>$LOGS/cracklib.err
