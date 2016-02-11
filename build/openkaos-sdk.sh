@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 4.0.0
+# Platform Build System version 5.0.0
 #
-# Copyright (c) 2009-2015 Opaque Systems, LLC 
+# Copyright (c) 2009-2016 Opaque Systems, LLC 
 #
 # script : openkaos-sdk.sh
 # purpose: production script to invoke chroot on SDK
@@ -11,10 +11,10 @@
 
 echo ""
 echo "Open Kernel Attached Operating System (OpenKaOS)"
-echo "Copyright (c) 2009-2015 Opaque Systems, LLC"
+echo "Copyright (c) 2009-2016 Opaque Systems, LLC"
 echo ""
 
-OKVERSION="4.0.0"
+OKVERSION="5.0.0"
 OKPWD=`pwd`
 export OKPWD OKVERSION
 

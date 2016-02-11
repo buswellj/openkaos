@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 4.0.0
+# Platform Build System version 5.0.0
 #
-# Copyright (c) 2009-2015 Opaque Systems, LLC
+# Copyright (c) 2009-2016 Opaque Systems, LLC
 #
 # script : fetch-opensrc.sh
 # purpose: this script fetches the core open source components from the Internet
@@ -11,8 +11,8 @@
 #
 
 echo ""
-echo "OpenKaOS Platform Build System, version 4.0.0"
-echo "Copyright (c) 2009-2015 Opaque Systems, LLC"
+echo "OpenKaOS Platform Build System, version 5.0.0"
+echo "Copyright (c) 2009-2016 Opaque Systems, LLC"
 echo ""
 echo ""
 echo "  [.] Loading environment "

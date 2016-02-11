@@ -1,8 +1,8 @@
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 4.0.0
+# Platform Build System version 5.0.0
 #
-# Copyright (c) 2009-2015 Opaque Systems, LLC 
+# Copyright (c) 2009-2016 Opaque Systems, LLC 
 #
 # script : bld-sdk.sh
 # purpose: sdk build script 3 of 3, creates SDK chroot from toolchain
@@ -26,9 +26,9 @@ echo ""
 
 echo "" > /etc/OpenKaOS-release
 echo "OpenKaOS SDK Environment" >> /etc/OpenKaOS-release
-echo "version 4.0.1" >> /etc/OpenKaOS-release
+echo "version 5.0.0" >> /etc/OpenKaOS-release
 echo "" >> /etc/OpenKaOS-release
-echo "Copyright (c) 2009-2015 Opaque Systems, LLC" >> /etc/OpenKaOS-release
+echo "Copyright (c) 2009-2016 Opaque Systems, LLC" >> /etc/OpenKaOS-release
 echo "" >> /etc/OpenKaOS-release
 
 echo "  [.] Stripping debug information from execs..."

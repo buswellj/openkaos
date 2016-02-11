@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 4.0.0
+# Platform Build System version 5.0.0
 #
-# Copyright (c) 2009-2015 Opaque Systems, LLC 
+# Copyright (c) 2009-2016 Opaque Systems, LLC 
 #
 # script : pkg-sdk.sh
 # purpose: package the SDK environment for distribution
@@ -11,7 +11,7 @@
 
 echo ""
 echo "Open Kernel Attached Operating System (OpenKaOS)"
-echo "Copyright (c) 2009-2015 Opaque Systems, LLC"
+echo "Copyright (c) 2009-2016 Opaque Systems, LLC"
 echo ""
 echo "Source Build Environment: $1"
 echo ""

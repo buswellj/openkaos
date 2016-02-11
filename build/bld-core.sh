@@ -1,8 +1,8 @@
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 4.0.0
+# Platform Build System version 5.0.0
 #
-# Copyright (c) 2009-2015 Opaque Systems, LLC 
+# Copyright (c) 2009-2016 Opaque Systems, LLC 
 #
 # script : bld-core.sh
 # purpose: SDK core build script - generates packages used in running system

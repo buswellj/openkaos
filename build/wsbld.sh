@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 4.0.0
+# Platform Build System version 5.0.0
 #
-# Copyright (c) 2009-2015 Opaque Systems, LLC 
+# Copyright (c) 2009-2016 Opaque Systems, LLC 
 #
 # script : wsbld.sh
 # purpose: create a new user workspace
@@ -14,7 +14,7 @@ PBHERE=`pwd`
 cd ~
 PBHOME=`pwd`
 cd $PBHERE
-PBVER="4.0.0"
+PBVER="5.0.0"
 PBUSER=`whoami`
 PBNOW=`date +%s`
 PBTAG="kaos-$PBNOW"
@@ -24,7 +24,7 @@ export PBHERE PBHOME PBVER PBUSER PBTAG PBWS
 
 echo ""
 echo "OpenKaOS Platform Build System, version $PBVER"
-echo "Copyright (c) 2009-2015 Opaque Systems, LLC"
+echo "Copyright (c) 2009-2016 Opaque Systems, LLC"
 echo ""
 echo ""
 echo "Building workspace for $PBUSER in $PBWS"

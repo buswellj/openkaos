@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 4.0.0
+# Platform Build System version 5.0.0
 #
-# Copyright (c) 2009-2015 Opaque Systems, LLC 
+# Copyright (c) 2009-2016 Opaque Systems, LLC 
 #
 # script : bld-kaos.sh
 # purpose: builds the KaOS platform from scratch
@@ -13,7 +13,7 @@ PPWD=`pwd`
 cd ~
 PBHOME=`pwd`
 cd $PPWD
-PBVER="4.0.0"
+PBVER="5.0.0"
 PBUSER=`whoami`
 PBNOW=`date +%s`
 PBWS="$PBHOME/openkaos"
@@ -23,7 +23,7 @@ export PPWD PBHOME PBVER PBUSER PBNOW PBWS PBTAG
 
 echo ""
 echo "OpenKaOS Platform Build System, version $PBVER"
-echo "Copyright (c) 2009-2015 Opaque Systems, LLC"
+echo "Copyright (c) 2009-2016 Opaque Systems, LLC"
 echo ""
 echo "http://www.opaquesystems.com"
 echo ""

@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Open Kernel Attached Operating System (OpenKaOS)
-# Platform Build System version 4.0.0
+# Platform Build System version 5.0.0
 #
-# Copyright (c) 2009-2015 Opaque Systems, LLC
+# Copyright (c) 2009-2016 Opaque Systems, LLC
 #
 # script : autobuild-kaos.sh
 # purpose: this script builds a new workspace, fetches code and then builds kaos
@@ -17,9 +17,9 @@ export APBLOG
 
 echo ""
 echo "Open Kernel Attached Operating System (OpenKaOS)"
-echo "Platform Build System version 4.0.0"
+echo "Platform Build System version 5.0.0"
 echo ""
-echo "Copyright (c) 2009-2015 Opaque Systems, LLC"
+echo "Copyright (c) 2009-2016 Opaque Systems, LLC"
 echo ""
 echo "Automated Build in progress..."
 echo ""
