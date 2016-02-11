@@ -22,6 +22,26 @@ PBNOW=`date +%s`
 PBTAG="opensrc-$PBNOW"
 export PBHERE PBENV PBNOW PBTAG
 
+echo "  [.] Checking parameters "
+
+if [ -e $1 ]; then
+ echo "  [!] You did not specify a source directory"
+ echo "  [I] Usage: ./verify-opensrc.sh /path/to/pkg/opensrc-XXXXXX"
+ echo ""
+ exit
+fi
+
+PBPATH=`echo "$HOME/openkaos/$PBENV/pkg/$1"`
+export PBPATH
+
+if [ ! -d "$PBPATH" ]; then
+ echo "  [!] The directory you specified does not exist"
+ echo "  [I] You specified $1"
+ echo "  [I] Full path = $PBPATH"
+ echo ""
+ exit
+fi
+
 echo "  [.] Checking Open Source components "
 cd ~/openkaos/$PBENV/pkg/$1
 
