@@ -110,3 +110,5 @@ https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/make-ca.sh
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/make-cert.pl
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/remove-expired-certs.sh
+https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2016/q1/aufs4-1455209157-patch.tar.bz2
+
