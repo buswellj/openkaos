@@ -48,11 +48,10 @@ make install 1>>$LOGS/expat.log 2>>$LOGS/expat.err
 
 echo "  [.] inetutils"
 cd $SRC/inetutils
-#echo '#define PATH_PROCNET_DEV "/proc/net/dev"' >> ifconfig/system/linux.h
 ./configure --prefix=/usr --libexecdir=/usr/sbin \
     --localstatedir=/var \
-    --disable-logger --disable-whois \
-    --disable-servers 1>>$LOGS/inetutils.log 2>>$LOGS/inetutils.err
+    --disable-logger --disable-whois --disable-rcp --disable-rexec --disable-rlogin \
+    --disable-rsh --disable-servers 1>>$LOGS/inetutils.log 2>>$LOGS/inetutils.err
 
 make 1>>$LOGS/inetutils.log 2>>$LOGS/inetutils.err
 make install 1>>$LOGS/inetutils.log 2>>$LOGS/inetutils.err
@@ -64,7 +63,6 @@ cd $SRC/perl
 echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
 export BUILD_ZLIB=False
 export BUILD_BZIP2=0
-#patch -Np1 -i ../patches/perl-5.20.2-gcc5_fixes-1.patch 1>>$LOGS/perl.log 2>>$LOGS/perl.err
 sh Configure -des -Dprefix=/usr \
                   -Dvendorprefix=/usr           \
                   -Dman1dir=/usr/share/man/man1 \
@@ -93,9 +91,31 @@ make install 1>>$LOGS/autoconf.log 2>>$LOGS/autoconf.err
 
 echo "  [.] automake"
 cd $SRC/automake
-./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.14.1 1>>$LOGS/automake.log 2>>$LOGS/automake.err
+sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in 1>>$LOGS/automake.log 2>>$LOGS/automake.err
+./configure --prefix=/usr --docdir=/usr/share/doc/automake 1>>$LOGS/automake.log 2>>$LOGS/automake.err
 make 1>>$LOGS/automake.log 2>>$LOGS/automake.err
 make install 1>>$LOGS/automake.log 2>>$LOGS/automake.err
+
+echo "  [.] coreutils "
+cd $SRC/coreutils
+patch -Np1 -i ../patches/coreutils-8.25-i18n-2.patch 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+touch Makefile.in
+FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/usr \
+    --libexecdir=/usr/lib --enable-no-install-program=kill,uptime 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+FORCE_UNSAFE_CONFIGURE=1 make 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+make NON_ROOT_USERNAME=nobody check-root 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+#echo "dummy:x:1000:nobody" >> /etc/group
+#chown -Rv nobody . 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+#su nobody -s /bin/bash -c "PATH=$PATH make RUN_EXPENSIVE_TESTS=yes check"
+#sed -i '/dummy/d' /etc/group
+make install 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+mv -v /usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} /bin 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+mv -v /usr/bin/{false,ln,ls,mkdir,mknod,mv,pwd,rm} /bin 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+mv -v /usr/bin/{rmdir,stty,sync,true,uname} /bin 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+mv -v /usr/bin/chroot /usr/sbin 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
+mv -v /usr/share/man/man1/chroot.1 /usr/share/man/man8/chroot.8
+sed -i s/\"1\"/\"8\"/1 /usr/share/man/man8/chroot.8
+mv -v /usr/bin/{head,sleep,nice,test,[} /bin 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
 
 echo "  [.] diffutils"
 cd $SRC/diffutils
@@ -121,15 +141,17 @@ sed -i 's/find:=${BINDIR}/find:=\/bin/' /usr/bin/updatedb 1>>$LOGS/findutils.log
 
 echo "  [.] gettext"
 cd $SRC/gettext
-./configure --prefix=/usr \
+./configure --prefix=/usr --disable-static \
             --docdir=/usr/share/doc/gettext 1>>$LOGS/gettext.log 2>>$LOGS/gettext.err
 make 1>>$LOGS/gettext.log 2>>$LOGS/gettext.err
 #make check 1>>$LOGS/gettext.log 2>>$LOGS/gettext.err
 make install 1>>$LOGS/gettext.log 2>>$LOGS/gettext.err
+chmod -v 0755 /usr/lib/preloadable_libintl.so 1>>$LOGS/gettext.log 2>>$LOGS/gettext.err
 
 echo "  [.] intltool"
 cd $SRC/intltool
-./configure --prefix=/usr 1>$LOGS/intltool.log 2>$LOGS/intltool.err
+sed -i 's:\\\${:\\\$\\{:' intltool-update.in 1>$LOGS/intltool.log 2>$LOGS/intltool.err
+./configure --prefix=/usr 1>>$LOGS/intltool.log 2>>$LOGS/intltool.err
 make 1>>$LOGS/intltool.log 2>>$LOGS/intltool.err
 make install 1>>$LOGS/intltool.log 2>>$LOGS/intltool.err
 
@@ -143,13 +165,13 @@ echo "  [.] groff"
 cd $SRC/groff
 PAGE=A4 ./configure --prefix=/usr 1>>$LOGS/groff.log 2>>$LOGS/groff.err
 make 1>>$LOGS/groff.log 2>>$LOGS/groff.err
-make docdir=/usr/share/doc/groff install 1>>$LOGS/groff.log 2>>$LOGS/groff.err
-ln -sv eqn /usr/bin/geqn
-ln -sv tbl /usr/bin/gtbl
+make install 1>>$LOGS/groff.log 2>>$LOGS/groff.err
 
 echo "  [.] xz"
 cd $SRC/xz
-./configure --prefix=/usr --disable-static --libdir=/lib --docdir=/usr/share/doc/xz 1>>$LOGS/xz.log 2>>$LOGS/xz.err
+sed -e '/mf\.buffer = NULL/a next->coder->mf.size = 0;' \
+     -i src/liblzma/lz/lz_encoder.c 1>>$LOGS/xz.log 2>>$LOGS/xz.err
+./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/xz 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 make 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 #make check 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 make install 1>>$LOGS/xz.log 2>>$LOGS/xz.err
@@ -174,16 +196,15 @@ mv -v /bin/{zfgrep,zforce,zgrep,zless,zmore,znew} /usr/bin
 
 echo "  [.] iproute2"
 cd $SRC/iproute2
-sed -i '/^TARGETS/s@arpd@@g' misc/Makefile
 sed -i /ARPD/d Makefile
 sed -i 's/arpd.8//' man/man8/Makefile
-make DESTDIR=  1>>$LOGS/iproute2.log 2>>$LOGS/iproute2.err
-make DESTDIR= SBINDIR=/sbin MANDIR=/usr/share/man \
-     DOCDIR=/usr/share/doc/iproute2 install 1>>$LOGS/iproute2.log 2>>$LOGS/iproute2.err
+rm -v doc/arpd.sgml
+make 1>>$LOGS/iproute2.log 2>>$LOGS/iproute2.err
+make DOCDIR=/usr/share/doc/iproute2 install 1>>$LOGS/iproute2.log 2>>$LOGS/iproute2.err
 
 echo "  [.] kbd"
 cd $SRC/kbd
-patch -Np1 -i ../patches/kbd-2.0.2-backspace-1.patch 1>>$LOGS/kbd.log 2>>$LOGS/kbd.err
+patch -Np1 -i ../patches/kbd-2.0.3-backspace-1.patch 1>>$LOGS/kbd.log 2>>$LOGS/kbd.err
 sed -i 's/\(RESIZECONS_PROGS=\)yes/\1no/g' configure
 sed -i 's/resizecons.8 //' man/man8/Makefile.in
 PKG_CONFIG_PATH=$TOOLS/lib/pkgconfig ./configure --prefix=/usr --disable-vlock 1>>$LOGS/kbd.log 2>>$LOGS/kbd.err
@@ -284,14 +305,9 @@ EOF
             --libexecdir=/lib       \
             --with-rootprefix=      \
             --with-rootlibdir=/lib  \
-            --enable-split-usr      \
             --enable-manpages       \
-            --enable-hwdb           \
-            --disable-introspection \
-            --disable-gudev         \
             --disable-static        \
-            --config-cache          \
-            --disable-gtk-doc-html 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+            --config-cache 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 LIBRARY_PATH=$TOOLS/lib make 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 mkdir -pv /lib/udev/rules.d 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 mkdir -pv /etc/udev/rules.d 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
@@ -304,7 +320,7 @@ echo "  [.] util-linux "
 cd $SRC/util-linux
 mkdir -pv /var/lib/hwclock
 ./configure ADJTIME_PATH=/var/lib/hwclock/adjtime     \
-            --docdir=/usr/share/doc/util-linux-2.26 \
+            --docdir=/usr/share/doc/util-linux \
             --disable-chfn-chsh  \
             --disable-login      \
             --disable-nologin    \
@@ -322,7 +338,7 @@ make install 1>>$LOGS/util-linux.log 2>>$LOGS/util-linux.err
 echo "  [.] man-db"
 cd $SRC/man-db
 ./configure --prefix=/usr --libexecdir=/usr/lib \
-    --docdir=/usr/share/doc/man-db-2.7.1 \
+    --docdir=/usr/share/doc/man-db \
     --sysconfdir=/etc --disable-setuid \
     --with-browser=/usr/bin/lynx --with-vgrind=/usr/bin/vgrind \
     --with-grap=/usr/bin/grap 1>>$LOGS/mandb.log 2>>$LOGS/mandb.err
