@@ -23,7 +23,7 @@ cd /
 echo "  [*] Building SDK: stage 1 of 3..."
 echo ""
 echo "  [.] creating directory structure"
-mkdir -pv /{bin,boot,etc/{opt,sysconfig},home,lib,mnt,opt}
+mkdir -pv /{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
 mkdir -pv /{media/{floppy,cdrom},sbin,srv,var}
 install -dv -m 0750 /root
 install -dv -m 1777 /tmp /var/tmp
@@ -56,6 +56,8 @@ ln -sv /proc/self/mounts /etc/mtab
 cat > /etc/passwd << "EOF"
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/bin/false
+daemon:x:6:6:Daemon User:/dev/null:/bin/false
+messagebus:x:18:18:D-Bus Message Daemon User:/var/run/dbus:/bin/false
 nobody:x:99:99:Unprivileged User:/dev/null:/bin/false
 EOF
 
@@ -76,8 +78,14 @@ video:x:12:
 utmp:x:13:
 usb:x:14:
 cdrom:x:15:
+adm:x:16:
+messagebus:x:18:
+systemd-journal:x:23:
+input:x:24:
 mail:x:34:
 nogroup:x:99:
+docker:x:100:
+users:x:1000:
 EOF
 
 touch /var/run/utmp /var/log/{btmp,lastlog,wtmp}
@@ -87,17 +95,19 @@ chmod -v 600  /var/log/btmp
 
 
 #
-# These use the public Google nameservers by default
+# These use the public Google nameservers by default (8.8.x.x)
+# Added OpenDNS public nameservers (208.67.x.x)
 #
 cat > /etc/resolv.conf << "EOF"
 nameserver 8.8.8.8
 nameserver 8.8.4.4
+nameserver 208.67.222.222
+nameserver 208.67.220.220
 EOF
 
 echo "  [.] Linux API Headers"
 cd $SRC/linux
 make mrproper 1>>$LOGS/linux.log 2>>$LOGS/linux.err
-make headers_check 1>>$LOGS/linux.log 2>>$LOGS/linux.err
 make INSTALL_HDR_PATH=dest headers_install 1>>$LOGS/linux.log 2>>$LOGS/linux.err
 find dest/include \( -name .install -o -name ..install.cmd \) -delete 1>>$LOGS/linux.log 2>>$LOGS/linux.err
 cp -rv dest/include/* /usr/include 1>>$LOGS/linux.log 2>>$LOGS/linux.err
@@ -108,47 +118,25 @@ make install 1>>$LOGS/man-pages.log 2>>$LOGS/man-pages.err
 
 echo "  [.] glibc "
 cd $SRC/glibc
-#sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
-patch -Np1 -i ../patches/glibc-2.21-fhs-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
-
-# Fix regression that impacts 32-bit architectures
-sed -e '/ia32/s/^/1:/' \
-    -e '/SSE2/s/^1://' \
-    -i  sysdeps/i386/i686/multiarch/mempcpy_chk.S 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
-
-# Fix security issue 
-sed -i '/glibc.*pad/{i\  buflen = buflen > pad ? buflen - pad : 0;
-                     s/ + pad//}' resolv/nss_dns/dns-host.c 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
-
-# Fix gcc 5 issue
-sed -e '/tst-audit2-ENV/i CFLAGS-tst-audit2.c += -fno-builtin' \
-    -i elf/Makefile 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
+patch -Np1 -i ../patches/glibc-2.22-fhs-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
+patch -Np1 -i ../patches/glibc-2.22-upstream_i386_fix-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
+patch -Np1 -i ../patches/glibc-2.22-largefile-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
 
 mkdir -v ../glibc-build
 cd ../glibc-build
-#case `uname -m` in
-#  i?86) echo "CFLAGS += -march=i486 -mtune=native -O3 -pipe" > configparms ;;
-#esac
 ../glibc/configure --prefix=/usr \
     --disable-profile \
     --enable-kernel=2.6.32 --enable-obsolete-rpc  1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
 make 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
-#
-#uncomment this to do checks
-#
 #make -k check 2>&1 | tee glibc-check-log
-#
 #grep Error glibc-check-log 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
+
 touch /etc/ld.so.conf
 make install 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
 # install NIS and RPC related headers - needed to rebuild glibc
 cp -v ../glibc/nscd/nscd.conf /etc/nscd.conf
 mkdir -pv /var/cache/nscd
-#cp -v ../glibc/sunrpc/rpc/*.h /usr/include/rpc
-#cp -v ../glibc/sunrpc/rpcsvc/*.h /usr/include/rpcsvc
-#cp -v ../glibc/nis/rpcsvc/*.h /usr/include/rpcsvc
 make localedata/install-locales 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
-#cp glibc-check-log $LOGS
 
 cat > /etc/nsswitch.conf << "EOF"
 # Begin /etc/nsswitch.conf
@@ -180,7 +168,7 @@ for tz in etcetera southamerica northamerica europe africa antarctica  \
     zic -L leapseconds -d $ZONEINFO/right -y "sh yearistype.sh" ${tz}
 done
 
-cp -v zone.tab iso3166.tab $ZONEINFO
+cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO
 zic -d $ZONEINFO -p America/New_York
 unset ZONEINFO
 
@@ -203,10 +191,15 @@ mkdir /etc/ld.so.conf.d
 
 echo "  [.] Adjusting Toolchain"
 cd $SRC/
+#mv -v $TOOLS/bin/{ld,ld-old}
+#mv -v $TOOLS/$(gcc -dumpmachine)/bin/{ld,ld-old}
+#mv -v $TOOLS/bin/{ld-new,ld}
+#ln -sv $TOOLS/bin/ld $TOOLS/$(gcc -dumpmachine)/bin/ld
+
 mv -v $TOOLS/bin/{ld,ld-old}
-mv -v $TOOLS/$(gcc -dumpmachine)/bin/{ld,ld-old}
+mv -v $TOOLS/$(uname -m)-pc-linux-gnu/bin/{ld,ld-old}
 mv -v $TOOLS/bin/{ld-new,ld}
-ln -sv $TOOLS/bin/ld $TOOLS/$(gcc -dumpmachine)/bin/ld
+ln -sv $TOOLS/bin/ld /tools/$(uname -m)-pc-linux-gnu/bin/ld
 
 echo "#!/bin/bash" > chroot-adj3.sh
 echo "gcc -dumpspecs | sed -e 's@$TOOLS@@g' \\" >> chroot-adj3.sh
@@ -246,15 +239,13 @@ make install 1>>$LOGS/file.log 2>>$LOGS/file.err
 echo "  [.] binutils"
 cd $SRC/binutils
 expect -c "spawn ls" 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
-#rm -fv etc/standards.info
-#sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
+patch -Np1 -i ../patches/binutils-2.26-upstream_fix-1.patch 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 mkdir -v ../binutils-build
 cd ../binutils-build
 ../binutils/configure --prefix=/usr --enable-shared --disable-werror 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make tooldir=/usr 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make check 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make tooldir=/usr install 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
-#cp -v ../binutils/include/libiberty.h /usr/include
 
 echo "  [.] gmp"
 cd $SRC/gmp
@@ -269,6 +260,7 @@ make install 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 
 echo "  [.] mpfr"
 cd $SRC/mpfr
+patch -Np1 -i ../patches/mpfr-3.1.3-upstream_fixes-1.patch
 ./configure --prefix=/usr --disable-static --enable-thread-safe --docdir=/usr/share/doc/mpfr 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make check 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
@@ -286,7 +278,6 @@ cd $SRC/gcc
 mv gmp kaos_magic.gmp
 mv mpc kaos_magic.mpc
 mv mpfr kaos_magic.mpfr
-patch -Np1 -i ../patches/gcc-5.1.0-upstream_fixes-1.patch 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 mkdir -v ../gcc-build
 cd ../gcc-build
 SED=sed ../gcc/configure --prefix=/usr \
@@ -301,7 +292,7 @@ make install 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
 ln -sv ../usr/bin/cpp /lib
 ln -sv gcc /usr/bin/cc
 install -v -dm755 /usr/lib/bfd-plugins
-ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/5.1.0/liblto_plugin.so /usr/lib/bfd-plugins/
+ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/5.3.0/liblto_plugin.so /usr/lib/bfd-plugins/
 echo 'main(){}' > dummy.c
 cc dummy.c -v -Wl,--verbose &> dummy.log
 readelf -l a.out | grep ': /lib' 1>>$LOGS/gcc.log 2>>$LOGS/gcc.err
@@ -357,12 +348,11 @@ make install 1>>$LOGS/pkg-config.log 2>>$LOGS/pkg-config.err
 
 echo "  [.] ncurses "
 cd $SRC/ncurses
-patch -Np1 -i ../patches/ncurses-5.9-gcc5_buildfixes-1.patch 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
-./configure --prefix=/usr --with-shared --without-debug --without-normal --enable-pc-files --enable-widec --mandir=/usr/share/man --enable-pc-files 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
+./configure --prefix=/usr --with-shared --without-debug --without-normal --enable-pc-files --enable-widec --mandir=/usr/share/man 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 make 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 make install 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
-mv -v /usr/lib/libncursesw.so.5* /lib 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
+mv -v /usr/lib/libncursesw.so.6* /lib 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 ln -sfv ../../lib/$(readlink /usr/lib/libncursesw.so) /usr/lib/libncursesw.so 1>>$LOGS/ncurses.log 2>>$LOGS/ncurses.err
 for lib in ncurses form panel menu ; do \
     rm -vf /usr/lib/lib${lib}.so ; \
@@ -442,7 +432,6 @@ sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
        -e 's@/var/spool/mail@/var/mail@' etc/login.defs
 sed -i 's@DICTPATH.*@DICTPATH\t/lib/cracklib/pw_dict@' \
     etc/login.defs
-sed -i 's/1000/999/' etc/useradd
 ./configure --sysconfdir=/etc --with-libcrack --with-group-name-max-length=32 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
 make 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
 make install 1>>$LOGS/shadow.log 2>>$LOGS/shadow.err
@@ -465,58 +454,32 @@ cd $SRC/procps
 ./configure --prefix=/usr                           \
             --exec-prefix=                          \
             --libdir=/usr/lib                       \
-            --docdir=/usr/share/doc/procps-ng-3.3.10 \
+            --docdir=/usr/share/doc/procps-ng-3.3.11 \
             --disable-static                        \
             --disable-kill 1>>$LOGS/procps.log 2>>$LOGS/procps.err
 make 1>>$LOGS/procps.log 2>>$LOGS/procps.err
 make install 1>>$LOGS/procps.log 2>>$LOGS/procps.err
-mv -v /usr/bin/pidof /bin
+#mv -v /usr/bin/pidof /bin
 mv -v /usr/lib/libprocps.so.* /lib
 ln -sfv ../../lib/$(readlink /usr/lib/libprocps.so) /usr/lib/libprocps.so
 
 echo "  [.] e2fsprogs "
 cd $SRC/e2fsprogs
-# Fix security issue
-sed -e '/int.*old_desc_blocks/s/int/blk64_t/' \
-    -e '/if (old_desc_blocks/s/super->s_first_meta_bg/desc_blocks/' \
-    -i lib/ext2fs/closefs.c 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
 mkdir -v build
 cd build
 LIBS=-L$TOOLS/lib \
 CFLAGS=-I$TOOLS/include \
 PKG_CONFIG_PATH=$TOOLS/lib/pkgconfig \
-../configure --prefix=/usr --with-root-prefix="" \
+../configure --prefix=/usr --with-root-prefix="" --bindir=/bin \
     --enable-elf-shlibs --disable-libblkid --disable-libuuid \
     --disable-uuidd --disable-fsck 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
 make 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
-#make check 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
 make install 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
 make install-libs 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
 chmod -v u+w /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
 gunzip -v /usr/share/info/libext2fs.info.gz 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
 install-info --dir-file=/usr/share/info/dir \
              /usr/share/info/libext2fs.info 1>>$LOGS/e2fsprogs.log 2>>$LOGS/e2fsprogs.err
-
-echo "  [.] coreutils "
-cd $SRC/coreutils
-patch -Np1 -i ../patches/coreutils-8.23-i18n-1.patch 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
-touch Makefile.in
-FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/usr \
-    --libexecdir=/usr/lib --enable-no-install-program=kill,uptime 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
-make 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
-make NON_ROOT_USERNAME=nobody check-root 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
-#echo "dummy:x:1000:nobody" >> /etc/group
-#chown -Rv nobody . 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
-#su nobody -s /bin/bash -c "PATH=$PATH make RUN_EXPENSIVE_TESTS=yes check"
-#sed -i '/dummy/d' /etc/group
-make install 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
-mv -v /usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} /bin 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
-mv -v /usr/bin/{false,ln,ls,mkdir,mknod,mv,pwd,rm} /bin 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
-mv -v /usr/bin/{rmdir,stty,sync,true,uname,test,[} /bin 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
-mv -v /usr/bin/chroot /usr/sbin 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
-mv -v /usr/share/man/man1/chroot.1 /usr/share/man/man8/chroot.8
-sed -i s/\"1\"/\"8\"/1 /usr/share/man/man8/chroot.8
-mv -v /usr/bin/{head,sleep,nice} /bin 1>>$LOGS/coreutils.log 2>>$LOGS/coreutils.err
 
 echo "  [.] iana-etc "
 cd $SRC/iana-etc
@@ -530,24 +493,6 @@ make 1>>$LOGS/m4.log 2>>$LOGS/m4.err
 make check 1>>$LOGS/m4.log 2>>$LOGS/m4.err
 make install 1>>$LOGS/m4.log 2>>$LOGS/m4.err
 
-echo "  [.] flex"
-cd $SRC/flex
-sed -i -e '/test-bison/d' tests/Makefile.in
-./configure --prefix=/usr --docdir=/usr/share/doc/flex 1>>$LOGS/flex.log 2>>$LOGS/flex.err
-make 1>>$LOGS/flex.log 2>>$LOGS/flex.err
-make check 1>>$LOGS/flex.log 2>>$LOGS/flex.err
-make install 1>>$LOGS/flex.log 2>>$LOGS/flex.err
-ln -sv libfl.a /usr/lib/libl.a 1>>$LOGS/flex.log 2>>$LOGS/flex.err
-cat > /usr/bin/lex << "EOF"
-#!/bin/sh   
-# Begin /usr/bin/lex
-
-exec /usr/bin/flex -l "$@"
-
-# End /usr/bin/lex
-EOF
-chmod -v 755 /usr/bin/lex 1>>$LOGS/flex.log 2>>$LOGS/flex.err
-
 echo "  [.] bison "
 cd $SRC/bison
 ./configure --prefix=/usr 1>>$LOGS/bison.log 2>>$LOGS/bison.err
@@ -555,10 +500,16 @@ make 1>>$LOGS/bison.log 2>>$LOGS/bison.err
 make check 1>>$LOGS/bison.log 2>>$LOGS/bison.err
 make install 1>>$LOGS/bison.log 2>>$LOGS/bison.err
 
+echo "  [.] flex"
+cd $SRC/flex
+./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/flex 1>>$LOGS/flex.log 2>>$LOGS/flex.err
+make 1>>$LOGS/flex.log 2>>$LOGS/flex.err
+make check 1>>$LOGS/flex.log 2>>$LOGS/flex.err
+make install 1>>$LOGS/flex.log 2>>$LOGS/flex.err
+ln -sv flex /usr/bin/lex
+
 echo "  [.] grep "
 cd $SRC/grep
-# Fix potential security issue
-sed -i -e '/tp++/a  if (ep <= tp) break;' src/kwset.c 1>>$LOGS/grep.log 2>>$LOGS/grep.err
 ./configure --prefix=/usr \
     --bindir=/bin 1>>$LOGS/grep.log 2>>$LOGS/grep.err
 make 1>>$LOGS/grep.log 2>>$LOGS/grep.err
@@ -570,8 +521,8 @@ cd $SRC/readline
 patch -Np1 -i ../patches/readline-6.3-upstream_fixes-3.patch 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 sed -i '/MV.*old/d' Makefile.in
 sed -i '/{OLDSUFF}/c:' support/shlib-install
-patch -Np1 -i ../patches/readline-6.3-upstream_fixes-3.patch 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 ./configure --prefix=/usr --disable-static 1>>$LOGS/readline.log 2>>$LOGS/readline.err
+make SHLIB_LIBS=-lncurses 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 make SHLIB_LIBS=-lncurses install 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 mv -v /usr/lib/lib{readline,history}.so.* /lib 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 ln -sfv ../../lib/$(readlink /usr/lib/libreadline.so) /usr/lib/libreadline.so 1>>$LOGS/readline.log 2>>$LOGS/readline.err
@@ -580,12 +531,13 @@ ln -sfv ../../lib/$(readlink /usr/lib/libhistory.so ) /usr/lib/libhistory.so 1>>
 echo "  [.] bash "
 cd $SRC/bash
 patch -Np1 -i ../patches/bash-4.3.30-upstream_fixes-2.patch 1>$LOGS/bash.log 2>$LOGS/bash.err
-./configure --prefix=/usr --bindir=/bin \
-    --htmldir=/usr/share/doc/bash-4.3.30 --without-bash-malloc \
+./configure --prefix=/usr \
+    --docdir=/usr/share/doc/bash-4.3.30 --without-bash-malloc \
     --with-installed-readline 1>>$LOGS/bash.log 2>>$LOGS/bash.err
 make 1>>$LOGS/bash.log 2>>$LOGS/bash.err
 #chown -Rv nobody .
 #su  nobody -s /bin/bash -c "$PATH=$PATH make tests"
 make install 1>>$LOGS/bash.log 2>>$LOGS/bash.err
+mv -vf /usr/bin/bash /bin
 
 exit
