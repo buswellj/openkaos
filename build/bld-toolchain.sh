@@ -17,12 +17,11 @@ mkdir src1
 cp -a $PBSRC/* src1
 
 echo "  [.] Applying patches to source tree..."
-echo "      (*) ncurses 5.9 gcc5-buildfixes patch"
-cd $PBBLD/src1/ncurses
-patch -Np1 -i ../patches/ncurses-5.9-gcc5_buildfixes-1.patch 1>>$PBLOG/strap_srcpatches.log 2>>$PBLOG/strap_srcpatches.err
+echo "      (*) glibc 2.22 upstream i386 fix-1 patch"
+cd $PBBLD/src1/glibc
+patch -Np1 -i ../patches/glibc-2.22-upstream_i386_fix-1.patch 1>>$PBLOG/strap_srcpatches.log 2>>$PBLOG/strap_srcpatches.err
 echo ""
 cd $PBBLD
-
 echo "  [.] Building toolchain environment..."
 echo ""
 
@@ -65,7 +64,6 @@ echo "  touch \$file.orig" >> gccsrc-adj.sh
 echo "done" >> gccsrc-adj.sh
 chmod 755 gccsrc-adj.sh
 ./gccsrc-adj.sh
-#sed -i '/k prot/agcc_cv_libc_provides_ssp=yes' gcc/configure
 mkdir -v ../gcc-build
 cd ../gcc-build
 ../gcc/configure \
@@ -75,23 +73,17 @@ cd ../gcc-build
     --with-native-system-header-dir=$TOOLS/include \
     --disable-nls --disable-shared --disable-multilib \
     --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp \
-    --disable-libitm --disable-libssp \
-    --disable-libquadmath --disable-libsanitizer \
-    --disable-libstdc++-v3 --disable-libvtv --disable-libcilkrts \
+    --disable-libssp --disable-libquadmath \
+    --disable-libstdcxx --disable-libvtv \
     --enable-languages=c,c++ \
     --with-mpfr-include=$(pwd)/../gcc/mpfr/src --with-mpfr-lib=$(pwd)/../gcc/mpfr/src/.libs 1>$PBLOG/strap_gcc.log 2>$PBLOG/strap_gcc.err
 make 1>>$PBLOG/strap_gcc.log 2>>$PBLOG/strap_gcc.err
 make install 1>>$PBLOG/strap_gcc.log 2>>$PBLOG/strap_gcc.err
 
-#
-#ln -vs libgcc.a `$LFS_TGT-gcc -print-libgcc-file-name | \
-#    sed 's/libgcc/&_eh/'`
-
 cd $PBBLD/src1
 echo "  [.] building kernel header api"
 cd linux
 make mrproper 1>>$PBLOG/strap_kernel_headers.log 2>>$PBLOG/strap_kernel_headers.err
-make headers_check 1>>$PBLOG/strap_kernel_headers.log 2>>$PBLOG/strap_kernel_headers.err
 make INSTALL_HDR_PATH=dest headers_install 1>>$PBLOG/strap_kernel_headers.log 2>>$PBLOG/strap_kernel_headers.err
 mkdir -p $TOOLS/include
 cp -rv dest/include/* $TOOLS/include
@@ -100,13 +92,7 @@ cd $PBBLD/src1
 echo "  [.] building glibc "
 mkdir -v glibc-build
 #
-# The fix below fixes a regression that impacts 32-bit architectures
-# Since this is a 64-bit platform, we just don't care!
-#
-#cd glibc
-#sed -e '/ia32/s/^/1:/' \
-#    -e '/SSE2/s/^1://' \
-#    -i  sysdeps/i386/i686/multiarch/mempcpy_chk.S
+# note: glibc is patched by the patch commands at the start of this script
 #
 cd glibc-build
 ../glibc/configure --prefix=$TOOLS \
@@ -118,17 +104,6 @@ make 1>>$PBLOG/strap_glibc.log 2>>$PBLOG/strap_glibc.err
 make install 1>>$PBLOG/strap_glibc.log 2>>$PBLOG/strap_glibc.err
 
 cd $PBBLD/src1
-#echo "  [.] toolchain adjustment "
-#echo "#!/bin/bash" > tooladj.sh
-#echo "SPECS=\`dirname \$(\$LFS_TGT-gcc -print-libgcc-file-name)\`/specs" >> tooladj.sh
-#echo "\$LFS_TGT-gcc -dumpspecs | sed \\" >> tooladj.sh
-#echo "  -e 's@/lib\\(64\\)\\?/ld@/tools.$PBUSER&@g' \\" >> tooladj.sh
-#echo "  -e \"/^\\*cpp:\$/{n;s,\$, -isystem /tools.$PBUSER/include,}\" > \$SPECS " >> tooladj.sh
-#echo "echo \"New specs file is: \$SPECS\" " >> tooladj.sh
-#echo "unset SPECS" >> tooladj.sh
-#chmod 755 tooladj.sh
-#./tooladj.sh
-
 echo "  [.] testing toolchain "
 echo 'main(){}' > dummy.c
 $LFS_TGT-gcc dummy.c
@@ -144,7 +119,7 @@ cd gcc-build-libstdc
     --disable-nls                        \
     --disable-libstdcxx-threads          \
     --disable-libstdcxx-pch              \
-    --with-gxx-include-dir=$TOOLS/$LFS_TGT/include/c++/5.1.0 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
+    --with-gxx-include-dir=$TOOLS/$LFS_TGT/include/c++/5.3.0 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
 make 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
 make install 1>>$PBLOG/strap_gcc_libstdc.log 2>>$PBLOG/strap_gcc_libstdc.err
 
@@ -243,6 +218,7 @@ cd $PBBLD/src1
 
 echo "  [.] building ncurses.. "
 cd ncurses
+sed -i s/mawk// configure
 ./configure --prefix=$TOOLS --with-shared \
     --without-debug --without-ada --enable-overwrite --enable-widec 1>>$PBLOG/strap_ncurses.log 2>>$PBLOG/strap_ncurses.err
 make 1>>$PBLOG/strap_ncurses.log 2>>$PBLOG/strap_ncurses.err
@@ -349,8 +325,8 @@ cd perl
 sh Configure -des -Dprefix=$TOOLS -Dlibs=-lm 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 make 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 cp -v perl cpan/podlators/pod2man $TOOLS/bin 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
-mkdir -pv $TOOLS/lib/perl5/5.22.0 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
-cp -Rv lib/* $TOOLS/lib/perl5/5.22.0 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
+mkdir -pv $TOOLS/lib/perl5/5.22.1 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
+cp -Rv lib/* $TOOLS/lib/perl5/5.22.1 1>>$PBLOG/strap_perl.log 2>>$PBLOG/strap_perl.err
 
 cd $PBBLD/src1
 echo "  [.] building sed.. "
@@ -397,7 +373,7 @@ rm -rf $TOOLS/{,share}/{info,man}
 sudo chown -R root:root $LFS/tools.$PBUSER
 
 echo ""
-echo "  [!] Toolchain build completed."
+echo "  [#] Toolchain build completed."
 echo ""
 
 cd $PPWD
