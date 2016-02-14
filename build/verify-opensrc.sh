@@ -307,6 +307,11 @@ if [ -e libcap ]; then
 else
  echo "  [.] libcap missing "
 fi
+if [ -e libffi ]; then
+ echo "  [.] libffi ok "
+else
+ echo "  [.] libffi missing "
+fi
 if [ -e libpipeline ]; then
  echo "  [.] libpipeline ok "
 else

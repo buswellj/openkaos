@@ -105,10 +105,13 @@ https://www.python.org/ftp/python/2.7.11/Python-2.7.11.tar.xz
 https://www.sqlite.org/2016/sqlite-autoconf-3100200.tar.gz
 https://nodejs.org/dist/v5.6.0/node-v5.6.0.tar.gz
 https://www.kernel.org/pub/linux/utils/kernel/kexec/kexec-tools-2.0.11.tar.xz
+ftp://sourceware.org/pub/libffi/libffi-3.2.1.tar.gz
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/bridge-utils-1.5-linux_3.8_fix-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/certdata.txt
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/make-ca.sh
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/make-cert.pl
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/remove-expired-certs.sh
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2016/q1/aufs4-1455209157-patch.tar.bz2
+https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2016/q1/dhcp-4.3.3-P1-missing_ipv6-1.patch
+https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2016/q1/dhcp-4.3.3-P1-client_script-1.patch
 

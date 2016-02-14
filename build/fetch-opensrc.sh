@@ -122,6 +122,7 @@ mv kexec-tools-* kexec-tools
 mv kmod* kmod
 mv less-* less
 mv libcap-* libcap
+mv libffi-* libffi
 mv libpipeline-* libpipeline
 mv libtool-* libtool
 mv linux-* linux
