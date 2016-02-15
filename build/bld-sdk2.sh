@@ -177,7 +177,7 @@ make 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 make install 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 mv -v   /usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} /bin 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 mv -v /usr/lib/liblzma.so.* /lib 1>>$LOGS/xz.log 2>>$LOGS/xz.err
-ln -svf ../../lib/$(readlink /lib/liblzma.so) /usr/lib/liblzma.so 1>>$LOGS/xz.log 2>>$LOGS/xz.err
+ln -svf ../../lib/$(readlink /usr/lib/liblzma.so) /usr/lib/liblzma.so 1>>$LOGS/xz.log 2>>$LOGS/xz.err
 
 echo "  [.] less"
 cd $SRC/less
@@ -291,11 +291,9 @@ echo "  [.] eudev"
 cd $SRC/eudev
 sed -r -i 's|/usr(/bin/test)|\1|' test/udev-test.pl 1>$LOGS/eudev.log 2>$LOGS/eudev.err
 
-cat > config.cache << "EOF"
-HAVE_BLKID=1
-BLKID_LIBS="-lblkid"
-BLKID_CFLAGS="-I/tools/include"
-EOF
+echo "HAVE_BLKID=1" > config.cache
+echo "BLKID_LIBS=\"-lblkid\"" >> config.cache
+echo "BLKID_CFLAGS=\"-I"$TOOLS"/include\"" >> config.cache
 
 ./configure --prefix=/usr           \
             --bindir=/sbin          \
@@ -312,7 +310,7 @@ LIBRARY_PATH=$TOOLS/lib make 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 mkdir -pv /lib/udev/rules.d 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 mkdir -pv /etc/udev/rules.d 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 make LD_LIBRARY_PATH=$TOOLS/lib install 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
-cp -a $SRC/udev udev-lfs-20140408 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
+cp -a $SRC/udev-lfs-20140408 udev-lfs-20140408 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 make -f udev-lfs-20140408/Makefile.lfs install 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 LD_LIBRARY_PATH=$TOOLS/lib udevadm hwdb --update 1>>$LOGS/eudev.log 2>>$LOGS/eudev.err
 

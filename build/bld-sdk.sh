@@ -242,7 +242,8 @@ expect -c "spawn ls" 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 patch -Np1 -i ../patches/binutils-2.26-upstream_fix-1.patch 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 mkdir -v ../binutils-build
 cd ../binutils-build
-../binutils/configure --prefix=/usr --enable-shared --disable-werror 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
+../binutils/configure --prefix=/usr --enable-shared --disable-werror \
+ --enable-gold=yes --enable-ld=default 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make tooldir=/usr 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make check 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make tooldir=/usr install 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
