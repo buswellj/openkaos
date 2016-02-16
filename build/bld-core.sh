@@ -113,7 +113,7 @@ make 1>>$LOGS/curl.log 2>>$LOGS/curl.err
 make install 1>>$LOGS/curl.log 2>>$LOGS/curl.err
 
 cd $SRC/dhcp
-#patch -Np1 -i ../patches/dhcp-4.3.3-P1-missing_ipv6-1.patch
+#patch -Np1 -i ../patches/dhcp-4.3.3-P1-nosupport_ipv6-1.patch
 patch -Np1 -i ../patches/dhcp-4.3.3-P1-client_script-1.patch
 CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
         -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
