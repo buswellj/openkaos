@@ -242,8 +242,7 @@ expect -c "spawn ls" 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 patch -Np1 -i ../patches/binutils-2.26-upstream_fix-1.patch 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 mkdir -v ../binutils-build
 cd ../binutils-build
-../binutils/configure --prefix=/usr --enable-shared --disable-werror \
- --enable-gold=yes --enable-ld=default 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
+../binutils/configure --prefix=/usr --enable-shared --disable-werror --enable-plugins 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make tooldir=/usr 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make check 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 make tooldir=/usr install 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
@@ -528,6 +527,20 @@ make SHLIB_LIBS=-lncurses install 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 mv -v /usr/lib/lib{readline,history}.so.* /lib 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 ln -sfv ../../lib/$(readlink /usr/lib/libreadline.so) /usr/lib/libreadline.so 1>>$LOGS/readline.log 2>>$LOGS/readline.err
 ln -sfv ../../lib/$(readlink /usr/lib/libhistory.so ) /usr/lib/libhistory.so 1>>$LOGS/readline.log 2>>$LOGS/readline.err
+
+echo "  [.] binutils-gold"
+cd $SRC/binutils
+expect -c "spawn ls" 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold.err
+#patch -Np1 -i ../patches/binutils-2.26-upstream_fix-1.patch 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold.err
+mkdir -v ../binutils-build2
+cd ../binutils-build2
+../binutils/configure --prefix=/usr --enable-shared --disable-werror \
+ --enable-gold=yes --enable-ld=default --enable-plugins 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold.err
+make tooldir=/usr 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold.err
+make check 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold.err
+make tooldir=/usr all-gold 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold.err
+make tooldir=/usr install-gold 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold.err
+
 
 echo "  [.] bash "
 cd $SRC/bash
