@@ -99,7 +99,6 @@ https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2015/06/
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/make-ca.sh
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/make-cert.pl
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/tools/remove-expired-certs.sh
-https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2016/q1/aufs4-1455209157-patch.tar.bz2
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2016/q1/dhcp-4.3.3-P1-nosupport_ipv6-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2016/q1/dhcp-4.3.3-P1-client_script-1.patch
 https://raw.githubusercontent.com/opaquesystems/openkaos/master/patches/2016/q1/binutils-2.26-upstream_fix-2.patch

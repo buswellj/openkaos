@@ -35,7 +35,6 @@ mkdir -p patches
 chmod a+wt patches
 mv *.patch patches
 mv certdata.txt patches
-mv aufs4-*.bz2 patches
 mkdir -p tools
 chmod a+wt tools
 mv make-ca.sh make-cert.pl remove-expired-certs.sh tools
