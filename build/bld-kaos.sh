@@ -30,14 +30,13 @@ echo ""
 
 if [ -z "$1" ]
 then
- echo "Error: Missing command line parameters"
  echo ""
- echo "Usage:"
+ echo "  [!] Error: Missing command line parameters"
  echo ""
- echo "./bld-kaos.sh <opensrc-src-id> [clean]"
+ echo "  [I] Usage: ./bld-kaos.sh <opensrc-src-id> [clean]"
  echo ""
- echo "opensrc-src-id == The output from the fetch-opensrc script"
- echo "clean == always build toolchain even if it exists"
+ echo "  [I] opensrc-src-id == The output from the fetch-opensrc script"
+ echo "  [I] clean == always build toolchain even if it exists"
  echo ""
  exit
 fi
@@ -49,9 +48,7 @@ export KARCH
 if [ ! "$KARCH" ]
  then
   echo ""
-  echo "### ERROR ###"
-  echo ""
-  echo " This platform requires an x86-64 system!"
+  echo "  [!] Unsupported architecture detected $KARCH, x86_64 required"
   echo ""
   exit
 fi
@@ -61,6 +58,14 @@ PBBLD="$PBWS/$PBTAG/bld-$PBNOW"
 PBLOG="$PBWS/$PBTAG/log-$PBNOW"
 PBSTATS="$PBWS/$PBTAG/stats-$PBNOW"
 export PBSRC PBBLD PBLOG PBSTATS
+
+if [ ! -d "$PBSRC" ]; then
+ echo "  [!] The directory you specified does not exist"
+ echo "  [I] You specified $1"
+ echo "  [I] Full path = $PBSRC"
+ echo ""
+ exit
+fi
 
 if [ -e $PBWS/.toolchain ]; then
  PBSKIPTOOLS=1
