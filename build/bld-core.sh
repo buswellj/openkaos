@@ -11,33 +11,33 @@
 TOOLS=`cat /.tools`
 SRC=/src
 SDK=/sdk
-APPCONFIG=/app/config
-APPSTATE=/app/status
-APPQ=/app/queue/pkg
-APPQUEUE=/app/queue
+OKBASIC=/sdk/OpenKaOS.basic/
+OKDOCKER=/sdk/OpenKaOS.docker/
+OKKVM=/sdk/OpenKaOS.kvm/
+OKCLOUD=/sdk/OpenKaOS.cloud/
 LOGS=/src/logs
 CFLAGS="-O2 -fPIC -pipe"
 CXXFLAGS="$CFLAGS"
 KAOSCPUS=`cat /proc/cpuinfo | grep processor | wc -l`
-export SDK SRC TOOLS LOGS CFLAGS CXXFLAGS KAOSCPUS APPQ APPCONFIG APPQUEUE
+export SDK SRC TOOLS LOGS CFLAGS CXXFLAGS KAOSCPUS OKBASIC OKDOCKER OKKVM OKCLOUD
 MAKEOPTS="-j$KAOSCPUS"
 export MAKEOPTS
 
 cd $SRC/
 mkdir -p $SDK/kernel
 mkdir -p $SDK/tools
-mkdir -p $APPQ
-mkdir -p $APPCONFIG
-mkdir -p $APPSTATE
+mkdir -p $OKBASIC $OKDOCKER $OKKVM $OKCLOUD
+mkdir -p $OKBASIC/{openkaos.boot,openkaos.fs,kernel-config}
+mkdir -p $OKDOCKER/{openkaos.boot,openkaos.fs,kernel-config}
+mkdir -p $OKKVM/{openkaos.boot,openkaos.fs,kernel-config}
+mkdir -p $OKCLOUD/{openkaos.boot,openkaos.fs,kernel-config}
 chown 0:0 -R $SDK
-chown 0:0 -R $APPQ
+
 
 cp -a $SRC/bld-cpio.sh $SDK/tools
-cp -a $SRC/*-linode $SDK/kernel
+cp -a $SRC/*-linode $OKCLOUD/kernel-config
+cp -a $SRC/*-linode $OKBASIC/kernel-config
 cp -a $SRC/linux $SDK/kernel
-mkdir -p $APPCONFIG
-mkdir -p $APPQ
-mkdir -p $APPSTATE
 
 cd $SRC/cpio
 ./configure --prefix=/usr --bindir=/bin --enable-mt --with-rmt=/usr/libexec/rmt --with-gnu-ld 1>>$LOGS/cpio.log 2>>$LOGS/cpio.err

@@ -10,6 +10,10 @@
 
 SRC=/src
 SDK=/sdk
+OKBASIC=/sdk/OpenKaOS.basic
+OKDOCKER=/sdk/OpenKaOS.docker
+OKKVM=/sdk/OpenKaOS.kvm
+OKCLOUD=/sdk/OpenKaOS.cloud
 APPCONFIG=/app/config
 APPQ=/app/queue/pkg
 APPQUEUE=/app/queue
@@ -17,117 +21,117 @@ LOGS=/src/logs
 CFLAGS="-O2 -fPIC -pipe"
 CXXFLAGS="$CFLAGS"
 KAOSCPUS=`cat /proc/cpuinfo | grep processor | wc -l`
-export SDK SRC LOGS CFLAGS CXXFLAGS KAOSCPUS APPQ APPCONFIG APPQUEUE
+export SDK SRC LOGS CFLAGS CXXFLAGS KAOSCPUS APPQ APPCONFIG APPQUEUE OKBASIC OKDOCKER OKKVM OKCLOUD
 MAKEOPTS="-j$KAOSCPUS"
 export MAKEOPTS
 
-mkdir -p $SDK/openkaos.fs
-mkdir -p $SDK/openkaos.fs/base
-mkdir -p $SDK/openkaos.boot
+for SDKBASE in $OKBASIC $OKDOCKER $OKKVM $OKCLOUD; do
 
-OKBFS=$SDK/openkaos.fs/base
-export OKBFS
+	mkdir -p $SDKBASE/openkaos.fs/base
+	mkdir -p $SDKBASE/openkaos.boot
 
-mkdir -p $OKBFS/{dev,bin,sbin,usr,lib,var}
-mkdir -p $OKBFS/app
-mkdir -p $OKBFS/app/config
-mkdir -p $OKBFS/app/status
-mkdir -p $OKBFS/app/status/dhcp
-ln -sfr $OKBFS/lib $OKBFS/lib64
-ln -sfr $OKBFS/bin $OKBFS/usr/bin
-ln -sfr $OKBFS/sbin $OKBFS/usr/sbin
-ln -sfr $OKBFS/lib $OKBFS/usr/lib
-ln -sfr $OKBFS/app/config $OKBFS/etc
+	OKBFS=$SDKBASE/openkaos.fs/base
+	export OKBFS
 
-mknod $OKBFS/dev/tty c 5 0
-mknod $OKBFS/dev/console c 5 1
-mknod $OKBFS/dev/tty0 c 4 0
-mknod $OKBFS/dev/hvc0 c 229 0
-mknod $OKBFS/dev/hvc1 c 229 1
-mknod $OKBFS/dev/hvc2 c 229 2
-mknod $OKBFS/dev/hvc3 c 229 3
-mknod $OKBFS/dev/hvc4 c 229 4
-mknod $OKBFS/dev/hvc5 c 229 5
-mknod $OKBFS/dev/hvc6 c 229 6
-mknod $OKBFS/dev/hvc7 c 229 7
-mknod $OKBFS/dev/rtc c 10 135
-mknod $OKBFS/dev/rtc0 c 254 0
+	mkdir -p $OKBFS/{dev,bin,sbin,usr,lib,var}
+	mkdir -p $OKBFS/app
+	mkdir -p $OKBFS/app/config
+	mkdir -p $OKBFS/app/status
+	mkdir -p $OKBFS/app/status/dhcp
+	ln -sfr $OKBFS/lib $OKBFS/lib64
+	ln -sfr	$OKBFS/bin $OKBFS/usr/bin
+	ln -sfr $OKBFS/sbin $OKBFS/usr/sbin
+	ln -sfr $OKBFS/lib $OKBFS/usr/lib
+	ln -sfr $OKBFS/app/config $OKBFS/etc
 
-cp -a /sbin/busybox $OKBFS/sbin/
-cp -a /usr/lib/libcrypto.so* $OKBFS/lib/
-cp -a /usr/lib/libssl.so* $OKBFS/lib/
-cp -a /usr/sbin/sshd $OKBFS/sbin/
-cp -a /usr/bin/ssh $OKBFS/bin/
-cp -a /usr/bin/scp $OKBFS/bin/
-cp -a /usr/bin/ssh-keygen $OKBFS/bin/
-cp -a /usr/bin/curl $OKBFS/bin/
-cp -a /usr/sbin/dhclient $OKBFS/sbin/
-cp -a /usr/sbin/dhclient-script $OKBFS/sbin/
-cp -a /bin/login $OKBFS/bin/
-cp -a /sbin/iptables $OKBFS/sbin/
-cp -a /sbin/xtables-multi $OKBFS/sbin/
-cp -a /usr/sbin/haveged $OKBFS/sbin/
-cp -a /sbin/agetty $OKBFS/sbin/
-cp -a /sbin/ip $OKBFS/sbin/
-cp -a /bin/echo $OKBFS/bin/
-cp -a /sbin/brctl $OKBFS/sbin/
-cp -a /sbin/bridge $OKBFS/sbin/
-cp -a /usr/sbin/kexec $OKBFS/sbin/
-cp -a /usr/bin/node $OKBFS/bin
-cp -a /usr/bin/iojs $OKBFS/bin
-cp -a /usr/bin/npm $OKBFS/bin
+	mknod $OKBFS/dev/tty c 5 0
+	mknod $OKBFS/dev/console c 5 1
+	mknod $OKBFS/dev/tty0 c 4 0
+	mknod $OKBFS/dev/hvc0 c 229 0
+	mknod $OKBFS/dev/hvc1 c 229 1
+	mknod $OKBFS/dev/hvc2 c 229 2
+	mknod $OKBFS/dev/hvc3 c 229 3
+	mknod $OKBFS/dev/hvc4 c 229 4
+	mknod $OKBFS/dev/hvc5 c 229 5
+	mknod $OKBFS/dev/hvc6 c 229 6
+	mknod $OKBFS/dev/hvc7 c 229 7
+	mknod $OKBFS/dev/rtc c 10 135
+	mknod $OKBFS/dev/rtc0 c 254 0
 
-cp -a /lib/ld-* $OKBFS/lib/
-cp -a /lib/libc-* $OKBFS/lib/
-cp -a /lib/libc.* $OKBFS/lib/
-cp -a /lib/libm-* $OKBFS/lib/
-cp -a /lib/libm.* $OKBFS/lib/
-cp -a /lib/libutil-* $OKBFS/lib/
-cp -a /lib/libutil.* $OKBFS/lib/
-cp -a /lib/libz.so.* $OKBFS/lib/
-cp -a /lib/libcrypt-* $OKBFS/lib/
-cp -a /lib/libcrypt.* $OKBFS/lib/
-cp -a /lib/libdl-* $OKBFS/lib/
-cp -a /lib/libdl.* $OKBFS/lib/
-cp -a /lib/librt-* $OKBFS/lib/
-cp -a /lib/librt.* $OKBFS/lib/
-cp -a /lib/libnsl-* $OKBFS/lib/
-cp -a /lib/libnsl.* $OKBFS/lib/
-cp -a /lib/libnss_* $OKBFS/lib/
-cp -a /lib/libresolv-* $OKBFS/lib/
-cp -a /lib/libresolv.* $OKBFS/lib/
-cp -a /lib/libblkid.* $OKBFS/lib/
-cp -a /lib/libuuid.* $OKBFS/lib/
-cp -a /lib/libe2p.* $OKBFS/lib/
-cp -a /lib/libpthread-* $OKBFS/lib/
-cp -a /lib/libpthread.* $OKBFS/lib/
-cp -a /lib/libext2fs.* $OKBFS/lib/
-cp -a /lib/libcom_err.* $OKBFS/lib/
-cp -a /usr/lib/libpam*.so* $OKBFS/lib/
-cp -a /lib/security $OKBFS/lib/
-cp -a /usr/lib/libcurl.so* $OKBFS/lib/
-cp -a /usr/lib/libip4tc.so* $OKBFS/lib/
-cp -a /usr/lib/libip6tc.so* $OKBFS/lib/
-cp -a /usr/lib/libxtables.so* $OKBFS/lib/
-cp -a /lib/xtables/ $OKBFS/lib/
-cp -a /usr/lib/libhavege.so* $OKBFS/lib/
-cp -a /usr/lib/libstdc++.* $OKBFS/lib/
-cp -a /usr/lib/libgcc_s.so* $OKBFS/lib/
-cp -a /lib/liblzma.so* $OKBFS/lib/
-cp -a /usr/lib/node_modules/ $OKBFS/lib/
+	cp -a /sbin/busybox $OKBFS/sbin/
+	cp -a /usr/lib/libcrypto.so* $OKBFS/lib/
+	cp -a /usr/lib/libssl.so* $OKBFS/lib/
+	cp -a /usr/sbin/sshd $OKBFS/sbin/
+	cp -a /usr/bin/ssh $OKBFS/bin/
+	cp -a /usr/bin/scp $OKBFS/bin/
+	cp -a /usr/bin/ssh-keygen $OKBFS/bin/
+	cp -a /usr/bin/curl $OKBFS/bin/
+	cp -a /usr/sbin/dhclient $OKBFS/sbin/
+	cp -a /usr/sbin/dhclient-script $OKBFS/sbin/
+	cp -a /bin/login $OKBFS/bin/
+	cp -a /sbin/iptables $OKBFS/sbin/
+	cp -a /sbin/xtables-multi $OKBFS/sbin/
+	cp -a /usr/sbin/haveged $OKBFS/sbin/
+	cp -a /sbin/agetty $OKBFS/sbin/
+	cp -a /sbin/ip $OKBFS/sbin/
+	cp -a /bin/echo $OKBFS/bin/
+	cp -a /sbin/brctl $OKBFS/sbin/
+	cp -a /sbin/bridge $OKBFS/sbin/
+	cp -a /usr/sbin/kexec $OKBFS/sbin/
+	cp -a /usr/bin/node $OKBFS/bin
+	cp -a /usr/bin/npm $OKBFS/bin
 
-cp -a /etc/{passwd,shadow,group,mtab,ld.so.conf,ld.so.cache,nsswitch.conf,resolv.conf} $OKBFS/app/config
-cp -a /etc/login.* $OKBFS/app/config
-cp -a /usr/share/zoneinfo/UTC $OKBFS/app/config/localtime
+	cp -a /lib/ld-* $OKBFS/lib/
+	cp -a /lib/libc-* $OKBFS/lib/
+	cp -a /lib/libc.* $OKBFS/lib/
+	cp -a /lib/libm-* $OKBFS/lib/
+	cp -a /lib/libm.* $OKBFS/lib/
+	cp -a /lib/libutil-* $OKBFS/lib/
+	cp -a /lib/libutil.* $OKBFS/lib/
+	cp -a /lib/libz.so.* $OKBFS/lib/
+	cp -a /lib/libcrypt-* $OKBFS/lib/
+	cp -a /lib/libcrypt.* $OKBFS/lib/
+	cp -a /lib/libdl-* $OKBFS/lib/
+	cp -a /lib/libdl.* $OKBFS/lib/
+	cp -a /lib/librt-* $OKBFS/lib/
+	cp -a /lib/librt.* $OKBFS/lib/
+	cp -a /lib/libnsl-* $OKBFS/lib/
+	cp -a /lib/libnsl.* $OKBFS/lib/
+	cp -a /lib/libnss_* $OKBFS/lib/
+	cp -a /lib/libresolv-* $OKBFS/lib/
+	cp -a /lib/libresolv.* $OKBFS/lib/
+	cp -a /lib/libblkid.* $OKBFS/lib/
+	cp -a /lib/libuuid.* $OKBFS/lib/
+	cp -a /lib/libe2p.* $OKBFS/lib/
+	cp -a /lib/libpthread-* $OKBFS/lib/
+	cp -a /lib/libpthread.* $OKBFS/lib/
+	cp -a /lib/libext2fs.* $OKBFS/lib/
+	cp -a /lib/libcom_err.* $OKBFS/lib/
+	cp -a /usr/lib/libpam*.so* $OKBFS/lib/
+	cp -a /lib/security $OKBFS/lib/
+	cp -a /usr/lib/libcurl.so* $OKBFS/lib/
+	cp -a /usr/lib/libip4tc.so* $OKBFS/lib/
+	cp -a /usr/lib/libip6tc.so* $OKBFS/lib/
+	cp -a /usr/lib/libxtables.so* $OKBFS/lib/
+	cp -a /lib/xtables/ $OKBFS/lib/
+	cp -a /usr/lib/libhavege.so* $OKBFS/lib/
+	cp -a /usr/lib/libstdc++.* $OKBFS/lib/
+	cp -a /usr/lib/libgcc_s.so* $OKBFS/lib/
+	cp -a /lib/liblzma.so* $OKBFS/lib/
+	cp -a /usr/lib/node_modules/ $OKBFS/lib/
 
-ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/ash
-ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/sh
+	cp -a /etc/{passwd,shadow,group,mtab,ld.so.conf,ld.so.cache,nsswitch.conf,resolv.conf} $OKBFS/app/config
+	cp -a /etc/login.* $OKBFS/app/config
+	cp -a /usr/share/zoneinfo/UTC $OKBFS/app/config/localtime
 
-mv $OKBFS/app/config/passwd $OKBFS/app/config/passwd.orig
-cat $OKBFS/app/config/passwd.orig | sed 's/bash/ash/g' > $OKBFS/app/config/passwd
-echo "sshusers:x:500:root" >> $OKBFS/app/config/group
-rm -rf $OKBFS/app/config/passwd.orig
-chmod 755 $OKBFS/sbin/dhclient-script
+	ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/ash
+	ln -sfr $OKBFS/sbin/busybox $OKBFS/bin/sh
+
+	mv $OKBFS/app/config/passwd $OKBFS/app/config/passwd.orig
+	cat $OKBFS/app/config/passwd.orig | sed 's/bash/ash/g' > $OKBFS/app/config/passwd
+	echo "sshusers:x:500:root" >> $OKBFS/app/config/group
+	rm -rf $OKBFS/app/config/passwd.orig
+	chmod 755 $OKBFS/sbin/dhclient-script
 
 cat > $OKBFS/init << EOF
 #!/sbin/busybox ash
@@ -225,8 +229,10 @@ EOF
 chmod 755 $OKBFS/init
 
 cd $OKBFS
-rm -rf $SDK/openkaos.boot/OpenKaOS_boot-5.0.0.cpio
-find . | cpio --quiet -H newc -o > $SDK/openkaos.boot/OpenKaOS_boot-5.0.0.cpio
+rm -rf $SDKBASE/openkaos.boot/OpenKaOS_boot-5.0.0.cpio
+find . | cpio --quiet -H newc -o > $SDKBASE/openkaos.boot/OpenKaOS_boot-5.0.0.cpio
+
+done
 
 cat > $SDK/tools/regen-initramfs << EOF
 #!/bin/bash
@@ -235,7 +241,7 @@ SDKNOW=\`date +%s\`
 SDKPWD=\`pwd\`
 export SDKNOW SDKPWD
 
-mv /sdk/openkaos.boot/OpenKaOS_boot-4.0.1.cpio /sdk/openkaos.boot/OpenKaOS_boot-5.0.0.cpio-\$SDKNOW
+mv /sdk/openkaos.boot/OpenKaOS_boot-5.0.0.cpio /sdk/openkaos.boot/OpenKaOS_boot-5.0.0.cpio-\$SDKNOW
 cd /sdk/openkaos.fs/base/
 find . | cpio --quiet -H newc -o > /sdk/openkaos.boot/OpenKaOS_boot-5.0.0.cpio
 cd \$SDKPWD
