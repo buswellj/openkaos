@@ -27,6 +27,8 @@ export MAKEOPTS
 
 for SDKBASE in $OKBASIC $OKDOCKER $OKKVM $OKCLOUD; do
 
+	echo "Generating $SDKBASE"
+
 	mkdir -p $SDKBASE/openkaos.fs/base
 	mkdir -p $SDKBASE/openkaos.boot
 
@@ -66,7 +68,7 @@ for SDKBASE in $OKBASIC $OKDOCKER $OKKVM $OKCLOUD; do
 	cp -a /usr/bin/scp $OKBFS/bin/
 	cp -a /usr/bin/ssh-keygen $OKBFS/bin/
 	cp -a /usr/bin/curl $OKBFS/bin/
-	cp -a /usr/sbin/dhclient $OKBFS/sbin/
+	cp -a /sbin/dhclient $OKBFS/sbin/
 	cp -a /usr/sbin/dhclient-script $OKBFS/sbin/
 	cp -a /bin/login $OKBFS/bin/
 	cp -a /sbin/iptables $OKBFS/sbin/
@@ -241,9 +243,30 @@ SDKNOW=\`date +%s\`
 SDKPWD=\`pwd\`
 export SDKNOW SDKPWD
 
-mv /sdk/openkaos.boot/OpenKaOS_boot-5.0.0.cpio /sdk/openkaos.boot/OpenKaOS_boot-5.0.0.cpio-\$SDKNOW
-cd /sdk/openkaos.fs/base/
-find . | cpio --quiet -H newc -o > /sdk/openkaos.boot/OpenKaOS_boot-5.0.0.cpio
+OKBASIC=/sdk/OpenKaOS.basic
+OKDOCKER=/sdk/OpenKaOS.docker
+OKKVM=/sdk/OpenKaOS.kvm
+OKCLOUD=/sdk/OpenKaOS.cloud
+export OKBASIC OKDOCKER OKKVM OKCLOUD
+
+mv $OKBASIC/openkaos.boot/OpenKaOS_boot-5.0.0.cpio $OKBASIC/openkaos.boot/OpenKaOS_boot-5.0.0.cpio-\$SDKNOW
+cd $OKBASIC/openkaos.fs/base/
+find . | cpio --quiet -H newc -o > $OKBASIC/openkaos.boot/OpenKaOS_boot-5.0.0.cpio
+cd \$SDKPWD
+
+mv $OKDOCKER/openkaos.boot/OpenKaOS_boot-5.0.0.cpio $OKDOCKER/openkaos.boot/OpenKaOS_boot-5.0.0.cpio-\$SDKNOW
+cd $OKDOCKER/openkaos.fs/base/
+find . | cpio --quiet -H newc -o > $OKDOCKER/openkaos.boot/OpenKaOS_boot-5.0.0.cpio
+cd \$SDKPWD
+
+mv $OKKVM/openkaos.boot/OpenKaOS_boot-5.0.0.cpio $OKKVM/openkaos.boot/OpenKaOS_boot-5.0.0.cpio-\$SDKNOW
+cd $OKKVM/openkaos.fs/base/
+find . | cpio --quiet -H newc -o > $OKKVM/openkaos.boot/OpenKaOS_boot-5.0.0.cpio
+cd \$SDKPWD
+
+mv $OKCLOUD/openkaos.boot/OpenKaOS_boot-5.0.0.cpio $OKCLOUD/openkaos.boot/OpenKaOS_boot-5.0.0.cpio-\$SDKNOW
+cd $OKCLOUD/openkaos.fs/base/
+find . | cpio --quiet -H newc -o > $OKCLOUD/openkaos.boot/OpenKaOS_boot-5.0.0.cpio
 cd \$SDKPWD
 
 EOF
