@@ -121,6 +121,7 @@ cd $SRC/glibc
 patch -Np1 -i ../patches/glibc-2.22-fhs-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
 patch -Np1 -i ../patches/glibc-2.22-upstream_i386_fix-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
 patch -Np1 -i ../patches/glibc-2.22-largefile-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
+patch -Np1 -i ../patches/glibc-2.22-upstream_fixes-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
 
 mkdir -v ../glibc-build
 cd ../glibc-build
@@ -239,7 +240,7 @@ make install 1>>$LOGS/file.log 2>>$LOGS/file.err
 echo "  [.] binutils"
 cd $SRC/binutils
 expect -c "spawn ls" 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
-patch -Np1 -i ../patches/binutils-2.26-upstream_fix-1.patch 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
+patch -Np1 -i ../patches/binutils-2.26-upstream_fix-2.patch 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
 mkdir -v ../binutils-build
 cd ../binutils-build
 ../binutils/configure --prefix=/usr --enable-shared --disable-werror --enable-plugins 1>>$LOGS/binutils.log 2>>$LOGS/binutils.err
@@ -260,7 +261,7 @@ make install 1>>$LOGS/gmp.log 2>>$LOGS/gmp.err
 
 echo "  [.] mpfr"
 cd $SRC/mpfr
-patch -Np1 -i ../patches/mpfr-3.1.3-upstream_fixes-1.patch 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
+patch -Np1 -i ../patches/mpfr-3.1.3-upstream_fixes-2.patch 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 ./configure --prefix=/usr --disable-static --enable-thread-safe --docdir=/usr/share/doc/mpfr 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
 make check 1>>$LOGS/mpfr.log 2>>$LOGS/mpfr.err
@@ -531,7 +532,7 @@ ln -sfv ../../lib/$(readlink /usr/lib/libhistory.so ) /usr/lib/libhistory.so 1>>
 echo "  [.] binutils-gold"
 cd $SRC/binutils
 expect -c "spawn ls" 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold.err
-#patch -Np1 -i ../patches/binutils-2.26-upstream_fix-1.patch 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold.err
+#patch -Np1 -i ../patches/binutils-2.26-upstream_fix-2.patch 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold.err
 mkdir -v ../binutils-build2
 cd ../binutils-build2
 ../binutils/configure --prefix=/usr --enable-shared --disable-werror \
@@ -544,7 +545,7 @@ make tooldir=/usr install-gold 1>>$LOGS/binutils-gold.log 2>>$LOGS/binutils-gold
 
 echo "  [.] bash "
 cd $SRC/bash
-patch -Np1 -i ../patches/bash-4.3.30-upstream_fixes-2.patch 1>$LOGS/bash.log 2>$LOGS/bash.err
+patch -Np1 -i ../patches/bash-4.3.30-upstream_fixes-3.patch 1>$LOGS/bash.log 2>$LOGS/bash.err
 ./configure --prefix=/usr \
     --docdir=/usr/share/doc/bash-4.3.30 --without-bash-malloc \
     --with-installed-readline 1>>$LOGS/bash.log 2>>$LOGS/bash.err
