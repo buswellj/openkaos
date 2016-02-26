@@ -242,10 +242,10 @@ cp -av Documentation/* $SDK/kernel/linux/Documentation/ 1>>$LOGS/aufs.log 2>>$LO
 cp -av fs/* $SDK/kernel/linux/fs/ 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
 cp -av include/uapi/linux/aufs_type.h $SDK/kernel/linux/include/uapi/linux/ 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
 cd $SDK/kernel/linux/
-patch -Np1 -i $SDK/kernel-tmp/aufs4-kbuild.patch 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
-patch -Np1 -i $SDK/kernel-tmp/aufs4-base.patch 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
-patch -Np1 -i $SDK/kernel-tmp/aufs4-mmap.patch 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
-patch -Np1 -i $SDK/kernel-tmp/aufs4-standalone.patch 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
+patch -Np1 -i $SDK/kernel-aufs/aufs4-standalone.git/aufs4-kbuild.patch 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
+patch -Np1 -i $SDK/kernel-aufs/aufs4-standalone.git/aufs4-base.patch 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
+patch -Np1 -i $SDK/kernel-aufs/aufs4-standalone.git/aufs4-mmap.patch 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
+patch -Np1 -i $SDK/kernel-aufs/aufs4-standalone.git/aufs4-standalone.patch 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
 make headers_install 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
 cp -av usr/include/linux/aufs_type.h /usr/include/linux 1>>$LOGS/aufs.log 2>>$LOGS/aufs.err
 cd $SDK
