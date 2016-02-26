@@ -118,10 +118,7 @@ make install 1>>$LOGS/man-pages.log 2>>$LOGS/man-pages.err
 
 echo "  [.] glibc "
 cd $SRC/glibc
-patch -Np1 -i ../patches/glibc-2.22-fhs-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
-patch -Np1 -i ../patches/glibc-2.22-upstream_i386_fix-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
-patch -Np1 -i ../patches/glibc-2.22-largefile-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
-patch -Np1 -i ../patches/glibc-2.22-upstream_fixes-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
+patch -Np1 -i ../patches/glibc-2.23-fhs-1.patch 1>>$LOGS/glibc.log 2>>$LOGS/glibc.err
 
 mkdir -v ../glibc-build
 cd ../glibc-build

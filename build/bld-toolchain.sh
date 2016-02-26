@@ -16,11 +16,11 @@ cd $PBBLD
 mkdir src1
 cp -a $PBSRC/* src1
 
-echo "  [.] Applying patches to source tree..."
-echo "      (*) glibc 2.22 upstream i386 fix-1 patch"
-cd $PBBLD/src1/glibc
-patch -Np1 -i ../patches/glibc-2.22-upstream_i386_fix-1.patch 1>>$PBLOG/strap_srcpatches.log 2>>$PBLOG/strap_srcpatches.err
-echo ""
+#echo "  [.] Applying patches to source tree..."
+#echo "      (*) glibc 2.22 upstream i386 fix-1 patch"
+#cd $PBBLD/src1/glibc
+#patch -Np1 -i ../patches/glibc-2.22-upstream_i386_fix-1.patch 1>>$PBLOG/strap_srcpatches.log 2>>$PBLOG/strap_srcpatches.err
+#echo ""
 cd $PBBLD
 echo "  [.] Building toolchain environment..."
 echo ""
