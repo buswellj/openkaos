@@ -27,7 +27,7 @@ export MAKEOPTS
 
 for SDKBASE in $OKBASIC $OKDOCKER $OKKVM $OKCLOUD; do
 
-	echo "Generating $SDKBASE"
+	echo "  [=] Generating $SDKBASE"
 
 	mkdir -p $SDKBASE/openkaos.fs/base
 	mkdir -p $SDKBASE/openkaos.boot
