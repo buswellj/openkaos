@@ -109,12 +109,12 @@ for SDKBASE in $OKBASIC $OKDOCKER $OKKVM $OKCLOUD; do
 	cp -a /lib/libpthread.* $OKBFS/lib/
 	cp -a /lib/libext2fs.* $OKBFS/lib/
 	cp -a /lib/libcom_err.* $OKBFS/lib/
-	cp -a /usr/lib/libpam*.so* $OKBFS/lib/
+	cp -a /lib/libpam*.so* $OKBFS/lib/
 	cp -a /lib/security $OKBFS/lib/
 	cp -a /usr/lib/libcurl.so* $OKBFS/lib/
-	cp -a /usr/lib/libip4tc.so* $OKBFS/lib/
-	cp -a /usr/lib/libip6tc.so* $OKBFS/lib/
-	cp -a /usr/lib/libxtables.so* $OKBFS/lib/
+	cp -a /lib/libip4tc.so* $OKBFS/lib/
+	cp -a /lib/libip6tc.so* $OKBFS/lib/
+	cp -a /lib/libxtables.so* $OKBFS/lib/
 	cp -a /lib/xtables/ $OKBFS/lib/
 	cp -a /usr/lib/libhavege.so* $OKBFS/lib/
 	cp -a /usr/lib/libstdc++.* $OKBFS/lib/
